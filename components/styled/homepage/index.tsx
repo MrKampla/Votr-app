@@ -79,5 +79,20 @@ export const ActionButton = styled(ButtonBase)`
 
 export const DisabledButton = styled(ButtonBase)`
   background: ${(props) => props.theme.disabled};
+  color: ${(props) => props.theme.font};
   cursor: not-allowed;
+`;
+
+export const ParagraphWrapper = styled.div`
+  color: ${(props) => props.theme.font};
+  font-size: 18px;
+  font-weight: bold;
+  padding-right: 32px;
+`;
+
+export const FadeIn = styled.div<{ show: boolean }>`
+  transition: all 1s ease;
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  transform-origin: center bottom;
+  transform: ${({ show }) => `scale(${show ? 1 : 0.8}) translateY(${show ? 0 : 20}px)`};
 `;

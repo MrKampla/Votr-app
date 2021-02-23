@@ -1,4 +1,7 @@
+import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
 import styled from 'styled-components';
+import Web3 from 'web3';
+import shortenWalletAddress from '../../scripts/shortenWalletAddress';
 
 const Connector = styled.div`
   color: ${(props) => props.theme.font};
@@ -12,8 +15,45 @@ const Connector = styled.div`
     color: ${(props) => props.theme.cta};
   }
 `;
+
+type WalletState = {
+  account: string;
+  setAccount: Dispatch<SetStateAction<string>>;
+  initConnection: () => Promise<void>;
+  ethereum: typeof Web3Instance;
+};
+
+export const WalletContext = createContext<WalletState>({} as WalletState);
+
+const Web3Instance = new Web3();
+
+export const useWalletProvider: () => WalletState = () => {
+  const [selectedAccount, setSelectedAccount] = useState<string>('');
+  const [ethereum, setEthereum] = useState<typeof Web3Instance>((undefined as unknown) as typeof Web3Instance);
+
+  async function initializeConnectionWithWallet() {
+    const win = window as any;
+    if (ethereum) {
+      return;
+    }
+    if (win.ethereum) {
+      win.web3 = new Web3(win.ethereum);
+      setEthereum(win.web3);
+      const accounts = await win.ethereum.request({ method: 'eth_requestAccounts' });
+      setSelectedAccount(accounts[0]);
+    } else if (win.web3) {
+      win.web3 = new Web3(win.web3.currentProvider);
+      setEthereum(win.web3);
+    } else {
+      window.alert('No Ethereum wallet detected. Please install MetaMask browser extension');
+    }
+  }
+  return { account: selectedAccount, setAccount: setSelectedAccount, initConnection: initializeConnectionWithWallet, ethereum };
+};
+
 const WalletConnector: React.FC = ({}) => {
-  return <Connector>CONNECT</Connector>;
+  const { initConnection, account } = useContext(WalletContext);
+  return <Connector onClick={() => initConnection()}> {account ? shortenWalletAddress(account) : 'CONNECT'}</Connector>;
 };
 
 export default WalletConnector;

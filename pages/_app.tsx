@@ -1,15 +1,24 @@
 // import App from "next/app";
 import type { AppProps /*, AppContext */ } from 'next/app';
-import { GlobalStyle } from '../components/theme';
 import Provider from '../components/theme/Provider';
 import Header from '../components/header';
+import { useWalletProvider, WalletContext } from '../components/header/WalletConnector';
+import { GlobalStyle } from '../components/theme';
+import ContractInitializer from '../components/ContractInitializer';
+
 function MyApp({ Component, pageProps }: AppProps) {
+  const wallet = useWalletProvider();
+
   return (
     <>
       <Provider>
-        <GlobalStyle />
-        <Header />
-        <Component {...pageProps} />
+        <WalletContext.Provider value={wallet}>
+          <ContractInitializer>
+            <GlobalStyle />
+            <Header />
+            <Component {...pageProps} />
+          </ContractInitializer>
+        </WalletContext.Provider>
       </Provider>
     </>
   );

@@ -19,14 +19,17 @@ import {
   DescriptionWrapper,
   DisabledButton,
   OnboardingContainer,
+  ParagraphWrapper,
   Title,
   YellowText,
 } from '../components/styled/homepage';
+import PollsParagraph from '../components/homepage/PollsParagraph';
 
 const CARDS: {
   key: string;
   title: JSX.Element;
   description: string;
+  Paragraph?: () => JSX.Element;
   button: (router: NextRouter) => JSX.Element;
 }[] = [
   {
@@ -37,6 +40,7 @@ const CARDS: {
         <YellowText>easly integrated </YellowText>into every environment
       </>
     ),
+    Paragraph: PollsParagraph,
     description: ' In need of truly decentralized governance? Create a poll and invite stakeholders to make a decision together.',
     button: (router) => <ActionButton onClick={() => router.push('/feed')}>Go to app</ActionButton>,
   },
@@ -123,7 +127,7 @@ export default function HomePage() {
         <Carousel>
           <SliderContainer>
             <Slider activeIdx={activeIdx}>
-              {CARDS.map(({ title, description, button, key }) => (
+              {CARDS.map(({ title, description, button, Paragraph, key }) => (
                 <CarouselItem key={key}>
                   <Box>
                     <Title>{title}</Title>
@@ -131,6 +135,13 @@ export default function HomePage() {
                       <Description>{description}</Description>
                       {button(router)}
                     </DescriptionWrapper>
+                  </Box>
+                  <Box>
+                    {Paragraph && (
+                      <ParagraphWrapper>
+                        <Paragraph />
+                      </ParagraphWrapper>
+                    )}
                   </Box>
                 </CarouselItem>
               ))}
