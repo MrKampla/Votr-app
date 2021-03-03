@@ -18,7 +18,7 @@ import {
   Description,
   DescriptionWrapper,
   DisabledButton,
-  OnboardingContainer,
+  FramedContainer,
   ParagraphWrapper,
   Title,
   YellowText,
@@ -123,7 +123,7 @@ export default function HomePage() {
 
   return (
     <ContentWrapper>
-      <OnboardingContainer>
+      <FramedContainer>
         <Carousel>
           <SliderContainer>
             <Slider activeIdx={activeIdx}>
@@ -167,7 +167,7 @@ export default function HomePage() {
             </SliderButton>
           </Controls>
         </Carousel>
-      </OnboardingContainer>
+      </FramedContainer>
     </ContentWrapper>
   );
 }

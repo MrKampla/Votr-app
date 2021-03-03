@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { darken } from 'polished';
 
-export const OnboardingContainer = styled.div`
+export const FramedContainer = styled.div`
   border: 2px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
   grid-column: 2 / auto;
   border-radius: 32px;
@@ -23,17 +23,17 @@ export const Title = styled.div`
   font-weight: bold;
   color: ${(props) => props.theme.font};
   padding: 0px 32px 48px 0;
-  @media (min-width: ${(props) => +props.theme.breakpoints.laptop}px) {
+  @media (min-width: ${(props) => props.theme.breakpoints.laptop}px) {
     max-width: 480px;
   }
 `;
 
-export const Box = styled.div`
-  padding: 32px;
+export const Box = styled.div<{ padding?: string; noWrap?: boolean }>`
+  padding: ${({ padding }) => padding ?? '32px'};
   display: flex;
   flex-direction: row;
-  @media (max-width: ${(props) => +props.theme.breakpoints.laptop}px) {
-    flex-direction: column;
+  @media (max-width: ${(props) => props.theme.breakpoints.laptop - 1}px) {
+    flex-direction: ${({ noWrap }) => (noWrap ? '' : 'column')};
   }
 `;
 
@@ -66,6 +66,7 @@ export const ButtonBase = styled.button`
   border-radius: 32px;
   width: fit-content;
   color: ${(props) => (props.theme.mode === 'light' ? props.theme.font : props.theme.primary)};
+  background: ${(props) => props.theme.disabled};
   margin-top: 16px;
   transition: 0.25s;
 `;
