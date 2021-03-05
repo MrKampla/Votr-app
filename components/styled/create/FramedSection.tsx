@@ -24,8 +24,13 @@ export const FramedSectionButton = styled(FramedElementWrapper)`
   }
 `;
 
-export const PropertiesElement = styled.div`
+export const PropertiesElement = styled.div<{ break?: boolean }>`
   display: flex;
   align-items: center;
   font-weight: bold;
+  white-space: nowrap;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}px) {
+    align-items: ${(props) => props.break && 'flex-start'};
+    flex-direction: ${(props) => props.break && 'column'};
+  }
 `;

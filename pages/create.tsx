@@ -12,10 +12,18 @@ import {
   BorderLessInput,
   BorderLessSelect,
   BorderLessDatePicker,
+  ThemedCheckbox,
 } from '../components/styled/create/Create';
 import { FramedSectionButton, PropertiesElement, CloseIcon } from '../components/styled/create/FramedSection';
 import FramedSection from '../components/create/FramedSection';
 import { FramedSectionElement } from '../components/create/FramedSectionElement';
+
+enum Poll {
+  FirstPastThePost = 'First Past The Post',
+  Cumulative = 'Cumulative',
+  Evaluative = 'Evaluative',
+  Quadratic = 'Quadratic',
+}
 
 const initialStateValue = {
   voters: [
@@ -28,6 +36,11 @@ const initialStateValue = {
   ],
   title: '',
   description: '',
+  quorum: 2,
+  isVoteDelegationAllowed: false,
+  pollType: Poll.FirstPastThePost,
+  startDate: new Date().toISOString(),
+  endDate: new Date().toISOString(),
 };
 
 type CreatePollStore = typeof initialStateValue;
@@ -40,6 +53,11 @@ interface ListElement {
 type Action =
   | { type: 'SET_DESCRIPTION'; description: string }
   | { type: 'SET_TITLE'; title: string }
+  | { type: 'SET_POLL_TYPE'; poll: Poll }
+  | { type: 'SET_QUORUM'; value: number }
+  | { type: 'SET_VOTE_DELEGATION'; value: boolean }
+  | { type: 'SET_START_DATE'; value: string }
+  | { type: 'SET_END_DATE'; value: string }
   | { type: 'ADD_VOTER' }
   | { type: 'CHANGE_VOTER'; voter: ListElement }
   | { type: 'REMOVE_VOTER'; voter: ListElement }
@@ -54,6 +72,16 @@ function createPollReducer(state: CreatePollStore, action: Action) {
       return { ...stateCopy, title: action.title };
     case 'SET_DESCRIPTION':
       return { ...stateCopy, description: action.description };
+    case 'SET_POLL_TYPE':
+      return { ...stateCopy, pollType: action.poll };
+    case 'SET_QUORUM':
+      return { ...stateCopy, quorum: action.value };
+    case 'SET_VOTE_DELEGATION':
+      return { ...stateCopy, isVoteDelegationAllowed: action.value };
+    case 'SET_START_DATE':
+      return { ...stateCopy, startDate: action.value };
+    case 'SET_END_DATE':
+      return { ...stateCopy, endDate: action.value };
     case 'ADD_CHOICE':
       const newId = stateCopy.choices.length === 0 ? 0 : Math.max(...state.choices.map((x) => x.id)) + 1;
       stateCopy.choices.push({ id: newId, value: '' });
@@ -151,31 +179,60 @@ export default function Create() {
             <Box padding="32px 32px 0 0">
               <FramedSection title={'Properties'} minWidth="100%">
                 <SeparatedList>
-                  <PropertiesElement>
+                  <PropertiesElement break>
                     Poll type
-                    <BorderLessSelect margin="0 0 0 auto">
-                      <option>First Past The Post</option>
-                      <option>Cumulative</option>
-                      <option>Evaluative</option>
-                      <option>Quadratic</option>
+                    <BorderLessSelect
+                      value={state.pollType}
+                      onChange={(e) => dispatch({ type: 'SET_POLL_TYPE', poll: e.target.value as Poll })}
+                      margin="0 2px 0 auto"
+                    >
+                      {Object.values(Poll).map((pollType) => (
+                        <option key={pollType} value={pollType}>
+                          {pollType}
+                        </option>
+                      ))}
                     </BorderLessSelect>
                   </PropertiesElement>
-                  <PropertiesElement>
-                    Start date <BorderLessDatePicker type="date" margin="0 0 0 auto" />
+                  <PropertiesElement break>
+                    Start date
+                    <BorderLessDatePicker
+                      value={state.startDate.substring(0, 16)}
+                      onChange={(e) => dispatch({ type: 'SET_START_DATE', value: new Date(e.target.value).toISOString() })}
+                      type="datetime-local"
+                      margin="0 0 0 auto"
+                    />
                   </PropertiesElement>
-                  <PropertiesElement>
-                    End date <BorderLessDatePicker type="date" margin="0 0 0 auto" />
+                  <PropertiesElement break>
+                    End date
+                    <BorderLessDatePicker
+                      value={state.endDate.substring(0, 16)}
+                      onChange={(e) => dispatch({ type: 'SET_END_DATE', value: new Date(e.target.value).toISOString() })}
+                      type="datetime-local"
+                      margin="0 0 0 auto"
+                    />
                   </PropertiesElement>
                   <PropertiesElement>
                     Quorum
-                    <BorderLessSelect margin="0 0 0 auto">
+                    <BorderLessSelect
+                      value={state.quorum}
+                      onChange={(e) => dispatch({ type: 'SET_QUORUM', value: +e.target.value })}
+                      margin="0 2px 0 auto"
+                    >
                       {state.voters.map((_, id) => (
-                        <option>{id + 1}</option>
+                        <option key={id} value={id + 1}>
+                          {id + 1}
+                        </option>
                       ))}
                     </BorderLessSelect>
                   </PropertiesElement>
                   <PropertiesElement>
-                    Allow vote delegation <input type="checkbox" style={{ marginLeft: 'auto' }} />
+                    Allow vote delegation
+                    <ThemedCheckbox
+                      checked={state.isVoteDelegationAllowed}
+                      onChange={(e) => dispatch({ type: 'SET_VOTE_DELEGATION', value: e.target.checked })}
+                      type="checkbox"
+                      margin="0 4px 0 auto"
+                    />
                   </PropertiesElement>
                 </SeparatedList>
                 <FramedSectionButton>Publish</FramedSectionButton>

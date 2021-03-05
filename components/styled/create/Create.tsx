@@ -133,12 +133,17 @@ export const BorderLessSelect = styled.select<{ margin?: string }>`
 
 export const BorderLessDatePicker = styled.input<{ margin?: string }>`
   border: none;
+  outline: none;
   color: ${(props) => props.theme.font};
   background: ${(props) => props.theme.primary};
   margin: ${(props) => props.margin};
   transition: 0.25s;
   padding: 4px 0;
   text-align-last: right;
+  font-weight: bold;
+  ::-webkit-calendar-picker-indicator {
+    filter: invert(${(props) => (props.theme.mode === 'dark' ? 1 : 0)});
+  }
   option {
     direction: rtl;
   }
@@ -146,4 +151,10 @@ export const BorderLessDatePicker = styled.input<{ margin?: string }>`
     background: ${(props) => props.theme.primary};
     color: ${(props) => props.theme.font};
   }
+`;
+
+export const ThemedCheckbox = styled.input<{ margin?: string }>`
+  outline: none;
+  cursor: pointer;
+  margin: ${(props) => props.margin};
 `;

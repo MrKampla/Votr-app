@@ -14,7 +14,7 @@ export const GlobalStyle = createGlobalStyle`
 
 const breakpoints = {
   small: 360,
-  mobile: 480,
+  mobile: 425,
   tablet: 768,
   laptop: 1024,
   large: 1440
