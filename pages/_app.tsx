@@ -1,17 +1,25 @@
-// import App from "next/app";
 import type { AppProps /*, AppContext */ } from 'next/app';
+import Head from 'next/head';
 import Provider from '../components/theme/Provider';
 import Header from '../components/header';
-import { useWalletProvider, WalletContext } from '../components/header/WalletConnector';
+import { useWalletProvider, WalletContext } from '../components/providers/WalletConnector';
 import { GlobalStyle } from '../components/theme';
-import ContractInitializer from '../components/ContractInitializer';
+import ContractInitializer from '../components/providers/ContractInitializer';
+import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function VotrApp({ Component, pageProps }: AppProps) {
   const wallet = useWalletProvider();
-
+  useEffect(() => {
+    wallet.initConnection();
+  }, []);
   return (
     <>
+      <Head>
+        <link rel="shortcut icon" href="/favicon.ico" />
+      </Head>
       <Provider>
+        <Toaster />
         <WalletContext.Provider value={wallet}>
           <ContractInitializer>
             <GlobalStyle />
@@ -29,11 +37,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 // perform automatic static optimization, causing every page in your app to
 // be server-side rendered.
 //
-// MyApp.getInitialProps = async (appContext: AppContext) => {
+// VotrApp.getInitialProps = async (appContext: AppContext) => {
 //   // calls page's `getInitialProps` and fills `appProps.pageProps`
 //   const appProps = await App.getInitialProps(appContext);
 
 //   return { ...appProps }
 // }
 
-export default MyApp;
+export default VotrApp;

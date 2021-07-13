@@ -1,6 +1,6 @@
 import { lighten, darken } from 'polished';
 import styled from 'styled-components';
-import { PollStatus } from '../../feed/PollList';
+import { PollStatus } from '../../polls/PollList';
 import { ButtonBase } from '../homepage';
 
 export const Title = styled.h1`
@@ -31,6 +31,9 @@ export const ListElement = styled.div`
   }
   transition: 0.25s;
   cursor: pointer;
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}px) {
+    height: fit-content;
+  }
 `;
 
 export const LoadMoreButton = styled(ButtonBase)`
@@ -55,12 +58,15 @@ export const ElementRow = styled.div`
   align-items: center;
   box-sizing: border-box;
   height: 32px;
+  @media (max-width: ${(props) => props.theme.breakpoints.tablet}px) {
+    height: fit-content;
+  }
 `;
 
 export const ChipWrapper = styled.div<{ value: PollStatus }>`
   display: flex;
   border-radius: 16px;
-  font-size: 11px;
+  font-size: 12px;
   height: 16px;
   width: 48px;
   padding: 4px;
@@ -91,9 +97,16 @@ export const PollTitle = styled.div`
 `;
 
 export const PollDescriptionRow = styled.div`
-  span {
-    font-weight: 900;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  div {
+    span {
+      font-weight: 900;
+    }
+    margin: 0 2px;
   }
+  opacity: 0.8;
 `;
 
 export const EmptyPollListNotification = styled.div`

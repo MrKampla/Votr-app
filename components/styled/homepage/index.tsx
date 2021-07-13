@@ -10,6 +10,10 @@ export const FramedContainer = styled.div`
   flex-wrap: nowrap;
 `;
 
+export const UnframedContainer = styled(FramedContainer)`
+  border: none;
+`;
+
 export const ContentWrapper = styled.div`
   display: grid;
   overflow-x: hidden;
