@@ -33,5 +33,5 @@ yarn-error.log*
 # vercel
 .vercel
 
-# contract types
-/contracts/@types
+# contracts
+contracts
