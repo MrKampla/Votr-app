@@ -5,6 +5,7 @@ import BallotBoxWhite from '../../public/BallotBoxWhite.svg';
 import Line from '../../public/Line.svg';
 import { ToggleThemeContext } from '../theme/Provider';
 import { useRouter } from 'next/router';
+import Routes from '../../constants/RoutesEnum';
 
 const LogoWrapper = styled.div`
   margin-left: 32px;
@@ -42,7 +43,7 @@ const Logo: React.FC = () => {
   const router = useRouter();
   const { value: isDarkMode } = useContext(ToggleThemeContext);
   return (
-    <LogoWrapper onClick={() => router.push('/')}>
+    <LogoWrapper onClick={() => router.push(Routes.Homepage)}>
       {isDarkMode ? <BallotBoxWhite /> : <BallotBoxIcon />}
       <LineIcon />
       <VotrWrapper>VOTR</VotrWrapper>

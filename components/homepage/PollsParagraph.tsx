@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { VotrContractsContext } from '../ContractInitializer';
+import { VotrContractsContext } from '../providers/ContractInitializer';
 import CountUp from 'react-countup';
 import { FadeIn, YellowText } from '../styled/homepage';
 

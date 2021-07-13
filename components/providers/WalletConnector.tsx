@@ -1,7 +1,8 @@
-import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import styled from 'styled-components';
 import Web3 from 'web3';
-import shortenWalletAddress from '../../scripts/shortenWalletAddress';
+import shortenAddress from '../../utils/shortenAddress';
 
 const Connector = styled.div`
   color: ${(props) => props.theme.font};
@@ -45,7 +46,7 @@ export const useWalletProvider: () => WalletState = () => {
       win.web3 = new Web3(win.web3.currentProvider);
       setEthereum(win.web3);
     } else {
-      window.alert('No Ethereum wallet detected. Please install MetaMask browser extension');
+      toast.error('No Ethereum wallet detected. Please install MetaMask browser extension');
     }
   }
   return { account: selectedAccount, setAccount: setSelectedAccount, initConnection: initializeConnectionWithWallet, ethereum };
@@ -53,7 +54,7 @@ export const useWalletProvider: () => WalletState = () => {
 
 const WalletConnector: React.FC = ({}) => {
   const { initConnection, account } = useContext(WalletContext);
-  return <Connector onClick={() => initConnection()}> {account ? shortenWalletAddress(account) : 'CONNECT'}</Connector>;
+  return <Connector onClick={() => initConnection()}> {account ? shortenAddress(account) : 'CONNECT'}</Connector>;
 };
 
 export default WalletConnector;

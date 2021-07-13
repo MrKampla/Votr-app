@@ -1,5 +1,5 @@
-import { useReducer } from 'react';
-import Navigation from '../components/feed/Navigation';
+import { useContext, useReducer } from 'react';
+import Navigation from '../components/polls/Navigation';
 import { ContentWrapper, Box } from '../components/styled/homepage';
 import {
   InputsWrapper,
@@ -17,12 +17,15 @@ import {
 import { FramedSectionButton, PropertiesElement, CloseIcon } from '../components/styled/create/FramedSection';
 import FramedSection from '../components/create/FramedSection';
 import { FramedSectionElement } from '../components/create/FramedSectionElement';
+import { VotrContractsContext } from '../components/providers/ContractInitializer';
+import { WalletContext } from '../components/providers/WalletConnector';
+import toast from 'react-hot-toast';
 
 enum Poll {
-  FirstPastThePost = 'First Past The Post',
-  Cumulative = 'Cumulative',
-  Evaluative = 'Evaluative',
-  Quadratic = 'Quadratic',
+  FirstPastThePost,
+  Cumulative,
+  Evaluative,
+  Quadratic,
 }
 
 const initialStateValue = {
@@ -39,7 +42,6 @@ const initialStateValue = {
   quorum: 2,
   isVoteDelegationAllowed: false,
   pollType: Poll.FirstPastThePost,
-  startDate: new Date().toISOString(),
   endDate: new Date().toISOString(),
 };
 
@@ -56,7 +58,6 @@ type Action =
   | { type: 'SET_POLL_TYPE'; poll: Poll }
   | { type: 'SET_QUORUM'; value: number }
   | { type: 'SET_VOTE_DELEGATION'; value: boolean }
-  | { type: 'SET_START_DATE'; value: string }
   | { type: 'SET_END_DATE'; value: string }
   | { type: 'ADD_VOTER' }
   | { type: 'CHANGE_VOTER'; voter: ListElement }
@@ -78,8 +79,6 @@ function createPollReducer(state: CreatePollStore, action: Action) {
       return { ...stateCopy, quorum: action.value };
     case 'SET_VOTE_DELEGATION':
       return { ...stateCopy, isVoteDelegationAllowed: action.value };
-    case 'SET_START_DATE':
-      return { ...stateCopy, startDate: action.value };
     case 'SET_END_DATE':
       return { ...stateCopy, endDate: action.value };
     case 'ADD_CHOICE':
@@ -87,6 +86,7 @@ function createPollReducer(state: CreatePollStore, action: Action) {
       stateCopy.choices.push({ id: newId, value: '' });
       return { ...stateCopy };
     case 'CHANGE_CHOICE':
+      if (action.choice.value.length > 32) return state;
       const choice = stateCopy.choices.find((choice) => choice.id === action.choice.id)!;
       choice.value = action.choice.value;
       return { ...stateCopy };
@@ -110,6 +110,11 @@ function createPollReducer(state: CreatePollStore, action: Action) {
 
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
+  const { pollFactory } = useContext(VotrContractsContext);
+  const { ethereum, account } = useContext(WalletContext);
+
+  const pollTypes = Object.keys(Poll).filter((x) => !(parseInt(x) >= 0));
+
   return (
     <>
       <Navigation />
@@ -182,25 +187,16 @@ export default function Create() {
                   <PropertiesElement break>
                     Poll type
                     <BorderLessSelect
-                      value={state.pollType}
-                      onChange={(e) => dispatch({ type: 'SET_POLL_TYPE', poll: e.target.value as Poll })}
+                      value={Poll[state.pollType]}
+                      onChange={(e) => dispatch({ type: 'SET_POLL_TYPE', poll: Poll[e.target.value as keyof typeof Poll] })}
                       margin="0 2px 0 auto"
                     >
-                      {Object.values(Poll).map((pollType) => (
+                      {pollTypes.map((pollType) => (
                         <option key={pollType} value={pollType}>
                           {pollType}
                         </option>
                       ))}
                     </BorderLessSelect>
-                  </PropertiesElement>
-                  <PropertiesElement break>
-                    Start date
-                    <BorderLessDatePicker
-                      value={state.startDate.substring(0, 16)}
-                      onChange={(e) => dispatch({ type: 'SET_START_DATE', value: new Date(e.target.value).toISOString() })}
-                      type="datetime-local"
-                      margin="0 0 0 auto"
-                    />
                   </PropertiesElement>
                   <PropertiesElement break>
                     End date
@@ -235,7 +231,45 @@ export default function Create() {
                     />
                   </PropertiesElement>
                 </SeparatedList>
-                <FramedSectionButton>Publish</FramedSectionButton>
+                <FramedSectionButton
+                  onClick={() => {
+                    if (!pollFactory) {
+                      toast.error('Please connect to ethereum network');
+                      return;
+                    }
+                    if (!state.title.length) {
+                      toast.error('Add title to poll');
+                      return;
+                    }
+                    if (!state.description.length) {
+                      toast.error('Add description to poll');
+                      return;
+                    }
+                    if (state.voters.some((voter) => voter.value === '')) {
+                      toast.error('There cannot be empty voter address');
+                      return;
+                    }
+                    if (!state.voters.every((voter) => ethereum.utils.isAddress(voter.value))) {
+                      toast.error('Not all voters are valid ethereum addresses');
+                      return;
+                    }
+                    pollFactory.methods
+                      .createPoll(
+                        state.pollType,
+                        state.title,
+                        state.description,
+                        state.choices.map((x) => ethereum.utils.fromAscii(x.value)),
+                        state.voters.map((x) => x.value),
+                        [],
+                        state.quorum,
+                        +new Date(state.endDate),
+                        state.isVoteDelegationAllowed
+                      )
+                      .send({ from: account });
+                  }}
+                >
+                  Publish
+                </FramedSectionButton>
               </FramedSection>
             </Box>
           </WrappableBoxColumn>

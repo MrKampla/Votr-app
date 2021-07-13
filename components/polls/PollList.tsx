@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { EmptyPollListNotification, ListElement, ListWrapper, LoadMoreButton } from '../styled/feed/Feed';
+import { EmptyPollListNotification, ListElement, ListWrapper, LoadMoreButton } from '../styled/polls/Polls';
 import { PollElement } from './PollElement';
 
 export type PollStatus = 'Active' | 'Ended';
@@ -29,7 +29,7 @@ const PollList: React.FC<PollListProps> = ({ polls, emptyNotification }) => {
         <ListWrapper>
           {polls.length
             ? polls.slice(0, range).map((poll) => (
-                <ListElement onClick={() => router.push(`/vote/${poll.address}`)}>
+                <ListElement onClick={() => router.push(poll.link)}>
                   <PollElement element={poll} />
                 </ListElement>
               ))

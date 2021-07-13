@@ -1,4 +1,4 @@
-import Navigation from '../../components/feed/Navigation';
+import Navigation from '../../components/polls/Navigation';
 import { ContentWrapper, FramedContainer } from '../../components/styled/homepage';
 import { Box } from '../../components/styled/homepage/index';
 
