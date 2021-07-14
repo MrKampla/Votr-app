@@ -6,13 +6,11 @@ import { useWalletProvider, WalletContext } from '../components/providers/Wallet
 import { GlobalStyle } from '../components/theme';
 import ContractInitializer from '../components/providers/ContractInitializer';
 import { Toaster } from 'react-hot-toast';
-import { useEffect } from 'react';
+import { useEagerWalletConnection } from '../utils/hooks/useEagerWalletConnection';
 
 function VotrApp({ Component, pageProps }: AppProps) {
   const wallet = useWalletProvider();
-  useEffect(() => {
-    wallet.initConnection();
-  }, []);
+  useEagerWalletConnection(wallet);
   return (
     <>
       <Head>

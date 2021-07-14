@@ -8,7 +8,7 @@ export default function Vote() {
       <Navigation />
       <ContentWrapper>
         <FramedContainer>
-          <Box>empty Vote page, create your own poll or vote in existing one that You've been added to</Box>
+          <Box>empty Vote page, create your own poll or vote in existing one that You&apos;ve been added to</Box>
         </FramedContainer>
       </ContentWrapper>
     </>

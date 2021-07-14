@@ -17,7 +17,7 @@ export default function HomePage() {
           <SliderContainer>
             <Slider activeIdx={activeIdx}>
               {CARDS.map((cardProps) => (
-                <Card {...cardProps} router={router} />
+                <Card {...cardProps} key={cardProps.key} router={router} />
               ))}
             </Slider>
           </SliderContainer>

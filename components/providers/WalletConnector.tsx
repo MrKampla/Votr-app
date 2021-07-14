@@ -17,7 +17,7 @@ const Connector = styled.div`
   }
 `;
 
-type WalletState = {
+export type WalletState = {
   account: string;
   setAccount: Dispatch<SetStateAction<string>>;
   initConnection: () => Promise<void>;
