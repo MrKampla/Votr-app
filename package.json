@@ -5,6 +5,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
+    "lint": "next lint",
     "typechain": "typechain --target=web3-v1 --outDir contracts/@types './contracts/*.json'"
   },
   "dependencies": {
@@ -31,6 +32,8 @@
     "@types/styled-components": "^5.1.7",
     "babel-plugin-inline-react-svg": "^2.0.0",
     "babel-plugin-styled-components": "^1.10.0",
+    "eslint": "^7.30.0",
+    "eslint-config-next": "^11.0.1",
     "typechain": "^4.0.2",
     "typescript": "^4.3.5"
   },
