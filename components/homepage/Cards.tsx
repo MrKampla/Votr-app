@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import { NextRouter } from 'next/router';
 import Link from 'next/link';
 import PollsParagraph from './PollsParagraph';

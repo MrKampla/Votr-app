@@ -26,6 +26,7 @@ function useVotrContracts() {
 
   useEffect(() => {
     initializeContracts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ethereum]);
 
   return { pollFactory };

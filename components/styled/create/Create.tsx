@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import TextareaAutosize from 'react-textarea-autosize';
-import { FramedContainer } from '../homepage';
+import { FramedContainer, UnframedContainer } from '../homepage';
 
 const BorderLessBase = styled(TextareaAutosize)`
   outline: none;
@@ -85,6 +85,12 @@ export const WrappableBoxColumn = styled(BoxColumn)`
 `;
 
 export const WrappableFramedContainer = styled(FramedContainer)`
+  @media (max-width: ${(props) => props.theme.breakpoints.laptop - 1}px) {
+    flex-direction: column;
+  }
+`;
+
+export const WrappableUnFramedContainer = styled(UnframedContainer)`
   @media (max-width: ${(props) => props.theme.breakpoints.laptop - 1}px) {
     flex-direction: column;
   }

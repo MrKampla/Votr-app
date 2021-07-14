@@ -9,12 +9,11 @@ interface CardProps {
   router: NextRouter;
   button: (router: NextRouter) => JSX.Element;
   Paragraph?: () => JSX.Element;
-  key: string;
 }
 
-const Card: React.FC<CardProps> = ({ title, description, router, button, Paragraph, key }) => {
+const Card: React.FC<CardProps> = ({ title, description, router, button, Paragraph }) => {
   return (
-    <CarouselItem key={key}>
+    <CarouselItem>
       <Box>
         <Title>{title}</Title>
         <DescriptionWrapper>

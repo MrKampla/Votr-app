@@ -29,7 +29,7 @@ const PollList: React.FC<PollListProps> = ({ polls, emptyNotification }) => {
         <ListWrapper>
           {polls.length
             ? polls.slice(0, range).map((poll) => (
-                <ListElement onClick={() => router.push(poll.link)}>
+                <ListElement key={poll.address} onClick={() => router.push(poll.link)}>
                   <PollElement element={poll} />
                 </ListElement>
               ))
