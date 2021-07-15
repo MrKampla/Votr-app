@@ -49,6 +49,9 @@ export const Box = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}px) {
+    padding: 0px;
+  }
 `;
 
 export const ElementRow = styled.div`
@@ -94,6 +97,9 @@ export const PollTitle = styled.div`
   font-size: 16px;
   margin-left: 8px;
   font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const PollDescriptionRow = styled.div`
