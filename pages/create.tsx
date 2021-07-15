@@ -1,4 +1,5 @@
 import { useContext, useReducer } from 'react';
+import { ethers } from 'ethers';
 import Navigation from '../components/polls/Navigation';
 import { ContentWrapper, Box } from '../components/styled/homepage';
 import {
@@ -21,10 +22,9 @@ import toast from 'react-hot-toast';
 import { createPollReducer, initialStateValue, CreatePollStore } from '../components/create/createPollReducer';
 import EditableListElement from '../components/create/EditableListElement';
 import { usePollTypesContracts } from '../utils/hooks/usePollTypesContracts';
-import Web3 from 'web3';
 import { VotrPollFactory } from '../contracts/@types/VotrPollFactory';
 
-const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPollFactory, ethereum: Web3) => {
+const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPollFactory) => {
   if (!pollFactory) {
     toast.error('Please connect to ethereum network');
     return false;
@@ -41,7 +41,7 @@ const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPol
     toast.error('There cannot be empty voter address');
     return false;
   }
-  if (!state.voters.every((voter) => ethereum.utils.isAddress(voter.value))) {
+  if (!state.voters.every((voter) => ethers.utils.isAddress(voter.value))) {
     toast.error('Not all voters are valid ethereum addresses');
     return false;
   }
@@ -51,7 +51,7 @@ const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPol
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
   const { pollFactory } = useContext(VotrContractsContext);
-  const { ethereum, account } = useContext(WalletContext);
+  const { account } = useContext(WalletContext);
   const pollTypes = usePollTypesContracts();
   return (
     <>
@@ -164,12 +164,37 @@ export default function Create() {
                   </PropertiesElement>
                 </SeparatedList>
                 <FramedSectionButton
-                  onClick={() => {
+                  onClick={async () => {
                     if (!pollFactory) return;
-                    if (validatePollCreationParams(state, pollFactory, ethereum)) {
-                      // pollFactory.methods
-                      //   .createPoll(...params)
-                      //   .send({ from: account });
+                    if (validatePollCreationParams(state, pollFactory)) {
+                      const tx = await pollFactory.createPoll(
+                        pollTypes[0].address,
+                        {
+                          basedOnToken: ethers.constants.AddressZero,
+                          name: 'vToken',
+                          symbol: 'VTK',
+                        },
+                        {
+                          title: state.title,
+                          description: state.description,
+                          allowVoteDelegation: true,
+                          callbackContractAddress: ethers.constants.AddressZero,
+                          chairman: account,
+                          quorum: state.quorum,
+                          endDate: Math.round(new Date(state.endDate).getTime() / 1000),
+                        },
+                        state.choices.map((choice) => choice.value),
+                        state.voters.map((voter) => ({
+                          addr: voter.value,
+                          allowedVotes: 1,
+                        }))
+                      );
+                      const receipt = await tx.wait();
+                      toast.success('Successfully created a new poll!', { position: 'top-right' });
+                      console.log({
+                        tx,
+                        receipt,
+                      });
                     }
                   }}
                 >

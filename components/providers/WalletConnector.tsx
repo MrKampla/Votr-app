@@ -1,7 +1,7 @@
-import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 import styled from 'styled-components';
-import Web3 from 'web3';
+import { ethers } from 'ethers';
 import shortenAddress from '../../utils/shortenAddress';
 
 const Connector = styled.div`
@@ -21,16 +21,16 @@ export type WalletState = {
   account: string;
   setAccount: Dispatch<SetStateAction<string>>;
   initConnection: () => Promise<void>;
-  ethereum: typeof Web3Instance;
+  ethereum: Web3Instance;
 };
 
 export const WalletContext = createContext<WalletState>({} as WalletState);
 
-const Web3Instance = new Web3();
+export type Web3Instance = ethers.providers.Web3Provider;
 
 export const useWalletProvider: () => WalletState = () => {
   const [selectedAccount, setSelectedAccount] = useState<string>('');
-  const [ethereum, setEthereum] = useState<typeof Web3Instance>((undefined as unknown) as typeof Web3Instance);
+  const [ethereum, setEthereum] = useState<Web3Instance>((undefined as unknown) as Web3Instance);
 
   async function initializeConnectionWithWallet() {
     const win = window as any;
@@ -38,12 +38,12 @@ export const useWalletProvider: () => WalletState = () => {
       return;
     }
     if (win.ethereum) {
-      win.web3 = new Web3(win.ethereum);
+      win.web3 = new ethers.providers.Web3Provider(win.ethereum);
       setEthereum(win.web3);
       const accounts = await win.ethereum.request({ method: 'eth_requestAccounts' });
       setSelectedAccount(accounts[0]);
     } else if (win.web3) {
-      win.web3 = new Web3(win.web3.currentProvider);
+      win.web3 = new ethers.providers.Web3Provider(win.web3.currentProvider);
       setEthereum(win.web3);
     } else {
       toast.error('No Ethereum wallet detected. Please install MetaMask browser extension');

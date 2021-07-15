@@ -9,7 +9,7 @@ export const usePollTypesContracts = () => {
   useEffect(() => {
     if (!ethereum) return;
     async function getPolls() {
-      const networkId = await ethereum.eth.net.getId();
+      const networkId = (await ethereum.getNetwork()).chainId;
       const fetchedPollTypes = getPollTypeContractsForNetwork(networkId.toString());
       setPollTypes(fetchedPollTypes);
     }

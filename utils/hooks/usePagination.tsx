@@ -7,7 +7,7 @@ export function usePagination(length: number) {
     if (activeIdx < length - 1) {
       setActiveIdx(activeIdx + 1);
     }
-  }, [setActiveIdx, activeIdx]);
+  }, [activeIdx, length]);
 
   const previous = useCallback(() => {
     if (activeIdx > 0) {

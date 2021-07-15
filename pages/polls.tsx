@@ -26,9 +26,9 @@ export default function Polls() {
             {arePollsInWitchUserVotedLoading ? (
               <LoadingIndicator />
             ) : (
-              <PollList polls={pollsInWitchUserVoted} emptyNotification="There are no polls connected with this account" />
+              <PollList polls={pollsInWitchUserVoted} emptyNotification="There are no polls in which this account took action" />
             )}
-            <Title>Polls You have created</Title>
+            <Title>Polls created by You</Title>
             {arePollsCreatedByUserLoading ? (
               <LoadingIndicator />
             ) : (

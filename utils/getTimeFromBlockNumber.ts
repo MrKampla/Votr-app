@@ -1,5 +1,5 @@
-import Web3 from "web3"
+import { Web3Instance } from '../components/providers/WalletConnector';
 
-export const getTimeFromBlockNumber = async (ethereum: Web3, blockNumber: number) => {
-    return (+(await ethereum.eth.getBlock(blockNumber)).timestamp) * 1000;
-}
+export const getTimeFromBlockNumber = async (ethereum: Web3Instance, blockNumber: number) => {
+  return (await ethereum.getBlock(blockNumber)).timestamp * 1000;
+};
