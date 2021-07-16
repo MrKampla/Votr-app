@@ -24,30 +24,6 @@ import EditableListElement from '../components/create/EditableListElement';
 import { usePollTypesContracts } from '../utils/hooks/usePollTypesContracts';
 import { VotrPollFactory } from '../contracts/@types/VotrPollFactory';
 
-const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPollFactory) => {
-  if (!pollFactory) {
-    toast.error('Please connect to ethereum network');
-    return false;
-  }
-  if (!state.title.length) {
-    toast.error('Add title to poll');
-    return false;
-  }
-  if (!state.description.length) {
-    toast.error('Add description to poll');
-    return false;
-  }
-  if (state.voters.some((voter) => voter.value === '')) {
-    toast.error('There cannot be empty voter address');
-    return false;
-  }
-  if (!state.voters.every((voter) => ethers.utils.isAddress(voter.value))) {
-    toast.error('Not all voters are valid ethereum addresses');
-    return false;
-  }
-  return true;
-};
-
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
   const { pollFactory } = useContext(VotrContractsContext);
@@ -163,43 +139,7 @@ export default function Create() {
                     />
                   </PropertiesElement>
                 </SeparatedList>
-                <FramedSectionButton
-                  onClick={async () => {
-                    if (!pollFactory) return;
-                    if (validatePollCreationParams(state, pollFactory)) {
-                      const tx = await pollFactory.createPoll(
-                        pollTypes[0].address,
-                        {
-                          basedOnToken: ethers.constants.AddressZero,
-                          name: 'vToken',
-                          symbol: 'VTK',
-                        },
-                        {
-                          title: state.title,
-                          description: state.description,
-                          allowVoteDelegation: true,
-                          callbackContractAddress: ethers.constants.AddressZero,
-                          chairman: account,
-                          quorum: state.quorum,
-                          endDate: Math.round(new Date(state.endDate).getTime() / 1000),
-                        },
-                        state.choices.map((choice) => choice.value),
-                        state.voters.map((voter) => ({
-                          addr: voter.value,
-                          allowedVotes: 1,
-                        }))
-                      );
-                      const receipt = await tx.wait();
-                      toast.success('Successfully created a new poll!', { position: 'top-right' });
-                      console.log({
-                        tx,
-                        receipt,
-                      });
-                    }
-                  }}
-                >
-                  Publish
-                </FramedSectionButton>
+                <FramedSectionButton onClick={() => createNewPoll(state, { account, pollFactory })}>Publish</FramedSectionButton>
               </FramedSection>
             </Box>
           </WrappableBoxColumn>
@@ -208,3 +148,70 @@ export default function Create() {
     </>
   );
 }
+
+const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPollFactory) => {
+  if (!pollFactory) {
+    toast.error('Please connect to ethereum network');
+    return false;
+  }
+  if (!state.title.length) {
+    toast.error('Add title to poll');
+    return false;
+  }
+  if (!state.description.length) {
+    toast.error('Add description to poll');
+    return false;
+  }
+  if (state.voters.some((voter) => voter.value === '')) {
+    toast.error('There cannot be empty voter address');
+    return false;
+  }
+  if (!state.voters.every((voter) => ethers.utils.isAddress(voter.value))) {
+    toast.error('Not all voters are valid ethereum addresses');
+    return false;
+  }
+  return true;
+};
+
+const createNewPoll = async (state: CreatePollStore, { account, pollFactory }: { account: string; pollFactory?: VotrPollFactory }) => {
+  if (!account || !pollFactory || !state.pollType) {
+    toast.error('Cannot create a poll without connecting to a network and choosing an account');
+    return;
+  }
+  if (validatePollCreationParams(state, pollFactory)) {
+    const tx = await pollFactory.createPoll(
+      state.pollType.address,
+      {
+        basedOnToken: ethers.constants.AddressZero,
+        name: 'vToken',
+        symbol: 'VTK',
+      },
+      {
+        title: state.title,
+        description: state.description,
+        allowVoteDelegation: true,
+        callbackContractAddress: ethers.constants.AddressZero,
+        chairman: account,
+        quorum: state.quorum,
+        endDate: Math.round(new Date(state.endDate).getTime() / 1000),
+      },
+      state.choices.map((choice) => choice.value),
+      state.voters.map((voter) => ({
+        addr: voter.value,
+        allowedVotes: 1,
+      }))
+    );
+    const receiptPromise = tx.wait();
+    toast.promise(
+      receiptPromise,
+      {
+        loading: 'Transaction in progress...',
+        success: 'Successfully created a new poll!',
+        error: 'Something went wrong',
+      },
+      {
+        position: 'top-right',
+      }
+    );
+  }
+};

@@ -1,11 +1,16 @@
-import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import shortenAddress from '../../utils/shortenAddress';
+import { isNetworkSupported } from '../../utils/isNetworkSupported';
+import { VotrContractsContext } from './ContractInitializer';
 
-const Connector = styled.div`
+const Connector = styled.div<{ errorBorder: boolean }>`
   color: ${(props) => props.theme.font};
+  border: ${(props) => (props.errorBorder ? `1px ${props.theme.danger} solid` : '')};
+  border-radius: 16px;
+  padding: 8px 10px;
   font-size: 14px;
   text-align: center;
   cursor: pointer;
@@ -30,11 +35,29 @@ export type Web3Instance = ethers.providers.Web3Provider;
 
 export const useWalletProvider: () => WalletState = () => {
   const [selectedAccount, setSelectedAccount] = useState<string>('');
-  const [ethereum, setEthereum] = useState<Web3Instance>((undefined as unknown) as Web3Instance);
+  const [ethereum, setEthereum] = useState<Web3Instance>((undefined as any) as Web3Instance);
+
+  useEffect(() => {
+    const provider = (window as any).ethereum as Web3Instance;
+    if (!provider) {
+      return () => {}; // no-op
+    }
+    const handler = (accounts: string[]) => {
+      setSelectedAccount(accounts[0] ?? '');
+    };
+    provider.on('accountsChanged', handler);
+    return () => {
+      provider.removeListener('accountsChanged', handler);
+    };
+  }, []);
 
   async function initializeConnectionWithWallet() {
     const win = window as any;
     if (ethereum) {
+      if (!selectedAccount) {
+        const accounts = await win.ethereum.request({ method: 'eth_requestAccounts' });
+        setSelectedAccount(accounts[0]);
+      }
       return;
     }
     if (win.ethereum) {
@@ -54,7 +77,12 @@ export const useWalletProvider: () => WalletState = () => {
 
 const WalletConnector: React.FC = ({}) => {
   const { initConnection, account } = useContext(WalletContext);
-  return <Connector onClick={() => initConnection()}> {account ? shortenAddress(account) : 'CONNECT'}</Connector>;
+  const { networkId } = useContext(VotrContractsContext);
+  return (
+    <Connector errorBorder={isNetworkSupported(networkId?.toString() ?? '')} onClick={() => initConnection()}>
+      {account ? shortenAddress(account) : 'CONNECT'}
+    </Connector>
+  );
 };
 
 export default WalletConnector;

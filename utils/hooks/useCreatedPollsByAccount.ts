@@ -6,13 +6,13 @@ import { WalletContext } from '../../components/providers/WalletConnector';
 import { mapAddressToPollData } from '../mapAddressToPollData';
 
 export const useCreatedPollsByAccount = (): [Poll[], boolean] => {
-  const { pollFactory } = useContext(VotrContractsContext);
+  const { pollFactory, networkId } = useContext(VotrContractsContext);
   const { account, ethereum } = useContext(WalletContext);
   const [isLoading, setIsLoading] = useState(false);
   const [polls, setPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
-    if (!pollFactory) {
+    if (!pollFactory || !account) {
       return;
     }
     setIsLoading(true);
@@ -34,7 +34,7 @@ export const useCreatedPollsByAccount = (): [Poll[], boolean] => {
         setIsLoading(false);
       })
       .catch(() => toast.error('something went wrong while fetching polls'));
-  }, [pollFactory, account, ethereum]);
+  }, [pollFactory, account, ethereum, networkId]);
 
   return [polls, isLoading];
 };
