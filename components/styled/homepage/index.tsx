@@ -32,10 +32,13 @@ export const Title = styled.div`
   }
 `;
 
-export const Box = styled.div<{ padding?: string; noWrap?: boolean }>`
+export const Box = styled.div<{ padding?: string; paddingMobile?: string; noWrap?: boolean }>`
   padding: ${({ padding }) => padding ?? '32px'};
   display: flex;
   flex-direction: row;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile - 1}px) {
+    padding: ${({ paddingMobile }) => paddingMobile ?? '24px'};
+  }
   @media (max-width: ${(props) => props.theme.breakpoints.laptop - 1}px) {
     flex-direction: ${({ noWrap }) => (noWrap ? '' : 'column')};
   }

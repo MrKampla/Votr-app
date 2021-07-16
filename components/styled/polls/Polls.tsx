@@ -50,7 +50,7 @@ export const Box = styled.div`
   flex-direction: column;
   width: 100%;
   @media (max-width: ${(props) => props.theme.breakpoints.mobile}px) {
-    padding: 0px;
+    padding: 8px;
   }
 `;
 

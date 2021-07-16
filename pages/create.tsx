@@ -37,7 +37,7 @@ export default function Create() {
       <ContentWrapper>
         <WrappableUnFramedContainer>
           <BoxColumn>
-            <Box>
+            <Box paddingMobile="8px">
               <InputsWrapper>
                 <BorderLessInput
                   placeholder="Title"
@@ -53,7 +53,7 @@ export default function Create() {
                 />
               </InputsWrapper>
             </Box>
-            <Box padding="16px 32px">
+            <Box padding="16px 32px" paddingMobile="16px 0">
               <FramedSection title={'Choices'} minWidth="100%">
                 <SeparatedList>
                   {state.choices.map((choice, index) => (
@@ -70,7 +70,7 @@ export default function Create() {
                 </SeparatedList>
               </FramedSection>
             </Box>
-            <Box padding="16px 32px 16px 32px">
+            <Box padding="16px 32px 16px 32px" paddingMobile="16px 0">
               <FramedSection title={'Voters'} minWidth="100%">
                 <SeparatedList>
                   {state.voters.map((voter, index) => (
@@ -89,7 +89,7 @@ export default function Create() {
             </Box>
           </BoxColumn>
           <WrappableBoxColumn width="480px">
-            <Box padding="32px 32px 0 0">
+            <Box padding="32px 32px 0 0" paddingMobile="16px 0">
               <FramedSection title={'Properties'} minWidth="100%">
                 <SeparatedList>
                   <PropertiesElement break>

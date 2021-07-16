@@ -63,11 +63,17 @@ export const FramedSectionContentWrapper = styled.div<{ minWidth?: string }>`
   @media (min-width: ${(props) => props.theme.breakpoints.laptop}px) {
     width: ${({ minWidth }) => minWidth};
   }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}px) {
+    border: none;
+  }
 `;
 
 export const FramedContent = styled.div`
   color: ${(props) => props.theme.font};
   padding: 16px 24px;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}px) {
+    padding: 8px 8px;
+  }
 `;
 
 export const BoxColumn = styled.div<{ width?: string }>`
@@ -81,6 +87,9 @@ export const WrappableBoxColumn = styled(BoxColumn)`
   @media (max-width: ${(props) => props.theme.breakpoints.laptop - 1}px) {
     width: 100%;
     padding: 0 0 32px 32px;
+  }
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile - 1}px) {
+    padding: 16px 0;
   }
 `;
 
