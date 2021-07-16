@@ -23,6 +23,8 @@ import { createPollReducer, initialStateValue, CreatePollStore } from '../compon
 import EditableListElement from '../components/create/EditableListElement';
 import { usePollTypesContracts } from '../utils/hooks/usePollTypesContracts';
 import { VotrPollFactory } from '../contracts/@types/VotrPollFactory';
+import { PollType } from '../constants/pollTypes';
+import { generateTransactionToast } from '../utils/generateTransactionToast';
 
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
@@ -139,7 +141,7 @@ export default function Create() {
                     />
                   </PropertiesElement>
                 </SeparatedList>
-                <FramedSectionButton onClick={() => createNewPoll(state, { account, pollFactory })}>Publish</FramedSectionButton>
+                <FramedSectionButton onClick={() => createNewPoll(state, { account, pollTypes, pollFactory })}>Publish</FramedSectionButton>
               </FramedSection>
             </Box>
           </WrappableBoxColumn>
@@ -173,14 +175,17 @@ const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPol
   return true;
 };
 
-const createNewPoll = async (state: CreatePollStore, { account, pollFactory }: { account: string; pollFactory?: VotrPollFactory }) => {
-  if (!account || !pollFactory || !state.pollType) {
+const createNewPoll = async (
+  state: CreatePollStore,
+  { account, pollTypes, pollFactory }: { account: string; pollTypes: PollType[]; pollFactory?: VotrPollFactory }
+) => {
+  if (!account || !pollFactory) {
     toast.error('Cannot create a poll without connecting to a network and choosing an account');
     return;
   }
   if (validatePollCreationParams(state, pollFactory)) {
     const tx = await pollFactory.createPoll(
-      state.pollType.address,
+      state.pollType?.address ?? pollTypes[0].address,
       {
         basedOnToken: ethers.constants.AddressZero,
         name: 'vToken',
@@ -202,16 +207,6 @@ const createNewPoll = async (state: CreatePollStore, { account, pollFactory }: {
       }))
     );
     const receiptPromise = tx.wait();
-    toast.promise(
-      receiptPromise,
-      {
-        loading: 'Transaction in progress...',
-        success: 'Successfully created a new poll!',
-        error: 'Something went wrong',
-      },
-      {
-        position: 'top-right',
-      }
-    );
+    generateTransactionToast(receiptPromise, tx.hash);
   }
 };

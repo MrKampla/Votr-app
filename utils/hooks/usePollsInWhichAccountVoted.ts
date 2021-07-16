@@ -29,7 +29,7 @@ export const usePollsInWhichAccountVoted = (): [Poll[], boolean] => {
             });
           })
         );
-        setPolls(pollsData);
+        setPolls(pollsData.reverse());
         setIsLoading(false);
       })
       .catch(() => toast.error('something went wrong while fetching polls'));

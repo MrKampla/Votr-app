@@ -44,7 +44,6 @@ function useVotrContracts() {
       }
       if (account) {
         initializeContracts(provider, setPollFactory, newNetwork.chainId);
-        toast.success(`Succesfully connected to network ${newNetwork.name}`);
       }
     };
     provider.on('network', listener);
