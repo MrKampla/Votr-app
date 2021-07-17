@@ -78,8 +78,10 @@ export const useWalletProvider: () => WalletState = () => {
 const WalletConnector: React.FC = ({}) => {
   const { initConnection, account } = useContext(WalletContext);
   const { networkId } = useContext(VotrContractsContext);
+  const isError = networkId?.toString() ? !isNetworkSupported(networkId.toString()) : false;
+
   return (
-    <Connector errorBorder={isNetworkSupported(networkId?.toString() ?? '')} onClick={() => initConnection()}>
+    <Connector errorBorder={isError} onClick={() => initConnection()}>
       {account ? shortenAddress(account) : 'CONNECT'}
     </Connector>
   );

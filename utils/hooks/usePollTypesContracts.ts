@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { PollType, getPollTypeContractsForNetwork } from '../../constants/pollTypes';
 import { WalletContext } from '../../components/providers/WalletConnector';
+import { isNetworkSupported } from '../isNetworkSupported';
 
 export const usePollTypesContracts = () => {
   const { ethereum } = useContext(WalletContext);
@@ -10,6 +11,9 @@ export const usePollTypesContracts = () => {
     if (!ethereum) return;
     async function getPolls() {
       const networkId = (await ethereum.getNetwork()).chainId;
+      if (!isNetworkSupported(networkId.toString())) {
+        return;
+      }
       const fetchedPollTypes = getPollTypeContractsForNetwork(networkId.toString());
       setPollTypes(fetchedPollTypes);
     }

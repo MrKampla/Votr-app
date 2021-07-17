@@ -38,7 +38,7 @@ function useVotrContracts() {
     const provider = new ethers.providers.Web3Provider((window as any).ethereum, 'any');
     const listener = (newNetwork: Network, _oldNetwork?: Network) => {
       setNetworkId(newNetwork.chainId);
-      if (isNetworkSupported(newNetwork.chainId.toString())) {
+      if (!isNetworkSupported(newNetwork.chainId.toString())) {
         toast.error(`Unsupported chain, make sure You're on the correct network`);
         return;
       }
