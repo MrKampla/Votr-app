@@ -14,8 +14,8 @@ const LoadingIndicator = () => (
 );
 
 export default function Polls() {
-  const [pollsCreatedByUser, arePollsCreatedByUserLoading] = useCreatedPollsByAccount();
-  const [pollsInWitchUserVoted, arePollsInWitchUserVotedLoading] = usePollsInWhichAccountVoted();
+  const [pollsCreatedByUser, pollsCreatedByUserStatus] = useCreatedPollsByAccount();
+  const [pollsInWitchUserVoted, pollsInWitchUserVotedStatus] = usePollsInWhichAccountVoted();
   return (
     <>
       <Navigation />
@@ -23,18 +23,29 @@ export default function Polls() {
         <UnframedContainer>
           <Box>
             <Title>Polls in which You voted</Title>
-            {arePollsInWitchUserVotedLoading ? (
+            {pollsInWitchUserVotedStatus === 'loading' ? (
               <LoadingIndicator />
             ) : (
-              <PollList polls={pollsInWitchUserVoted} emptyNotification="There are no polls in which this account took action" />
+              <PollList
+                polls={pollsInWitchUserVoted}
+                emptyNotification={
+                  pollsInWitchUserVotedStatus === 'error'
+                    ? 'An error occured while fetching data. Try to refresh the page.'
+                    : 'There are no polls in which this account took action'
+                }
+              />
             )}
             <Title>Polls created by You</Title>
-            {arePollsCreatedByUserLoading ? (
+            {pollsCreatedByUserStatus === 'loading' ? (
               <LoadingIndicator />
             ) : (
               <PollList
                 polls={pollsCreatedByUser}
-                emptyNotification="There are no polls created by this account. Go ahead and create one!"
+                emptyNotification={
+                  pollsCreatedByUserStatus === 'error'
+                    ? 'An error occured while fetching data. Try to refresh the page.'
+                    : 'There are no polls created by this account. Go ahead and create one!'
+                }
               />
             )}
           </Box>

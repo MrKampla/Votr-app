@@ -4,18 +4,19 @@ import { VotrContractsContext } from '../../components/providers/ContractInitial
 import { Poll } from '../../components/polls/PollList';
 import { WalletContext } from '../../components/providers/WalletConnector';
 import { mapAddressToPollData } from '../mapAddressToPollData';
+import { RequestStatus } from '../../constants/requestStatus';
 
-export const useCreatedPollsByAccount = (): [Poll[], boolean] => {
+export const useCreatedPollsByAccount = (): [Poll[], RequestStatus] => {
   const { pollFactory, networkId } = useContext(VotrContractsContext);
   const { account, ethereum } = useContext(WalletContext);
-  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<RequestStatus>('idle');
   const [polls, setPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
     if (!pollFactory || !account) {
       return;
     }
-    setIsLoading(true);
+    setStatus('loading');
     const getCreatedPollsByAccountQuery = pollFactory.filters.PollCreated(account);
     pollFactory
       .queryFilter(getCreatedPollsByAccountQuery, 0)
@@ -31,10 +32,13 @@ export const useCreatedPollsByAccount = (): [Poll[], boolean] => {
           })
         );
         setPolls(pollsData.reverse());
-        setIsLoading(false);
+        setStatus('success');
       })
-      .catch(() => toast.error('something went wrong while fetching polls'));
+      .catch(() => {
+        toast.error('something went wrong while fetching polls');
+        setStatus('error');
+      });
   }, [pollFactory, account, ethereum, networkId]);
 
-  return [polls, isLoading];
+  return [polls, status];
 };
