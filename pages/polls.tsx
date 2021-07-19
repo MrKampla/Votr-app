@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import Navigation from '../components/polls/Navigation';
 import PollList from '../components/polls/PollList';
 import { Title } from '../components/styled/polls/Polls';
@@ -6,12 +7,18 @@ import { Box } from '../components/styled/polls/Polls';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { useCreatedPollsByAccount } from '../utils/hooks/useCreatedPollsByAccount';
 import { usePollsInWhichAccountVoted } from '../utils/hooks/usePollsInWhichAccountVoted';
+import { ThemeContext } from 'styled-components';
+import { darken, lighten } from 'polished';
 
-const LoadingIndicator = () => (
-  <SkeletonTheme color="#222222" highlightColor="#333333">
-    <Skeleton height="48px" />
-  </SkeletonTheme>
-);
+const LoadingIndicator = () => {
+  const { primary, mode } = useContext(ThemeContext);
+  const modifierFunction = mode === 'dark' ? lighten : darken;
+  return (
+    <SkeletonTheme color={modifierFunction(0.1, primary)} highlightColor={modifierFunction(0.2, primary)}>
+      <Skeleton height="48px" />
+    </SkeletonTheme>
+  );
+};
 
 export default function Polls() {
   const [pollsCreatedByUser, pollsCreatedByUserStatus] = useCreatedPollsByAccount();
