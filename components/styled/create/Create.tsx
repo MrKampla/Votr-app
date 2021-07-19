@@ -105,8 +105,10 @@ export const WrappableUnFramedContainer = styled(UnframedContainer)`
   }
 `;
 
-export const FramedElementWrapper = styled.div`
-  border: 1px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+export const FramedElementWrapper = styled.div<{ isError?: boolean }>`
+  border: 1px solid
+    ${(props) =>
+      props.isError ? props.theme.danger : props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)'};
   border-radius: 32px;
   background: ${(props) => props.theme.disabled};
   padding: 8px 16px;

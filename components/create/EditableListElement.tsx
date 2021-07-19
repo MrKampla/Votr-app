@@ -8,15 +8,21 @@ interface EditableListElementProps {
     value: string;
   };
   placeholder: string;
-  index: number;
+  index?: number;
+  isError?: boolean;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
-  EndAdornment: React.ReactNode | JSX.Element;
+  EndAdornment?: React.ReactNode | JSX.Element;
 }
 
-const EditableListElement: React.FC<EditableListElementProps> = ({ element, index, onChange, placeholder, EndAdornment }) => {
+const EditableListElement: React.FC<EditableListElementProps> = ({ element, index, onChange, placeholder, isError, EndAdornment }) => {
   return (
-    <FramedSectionElement key={element.id} StartAdornment={index + 1} EndAdornment={EndAdornment}>
-      <SectionElementInput translate={''} value={element.value} placeholder={placeholder} onChange={onChange} />
+    <FramedSectionElement
+      key={element.id}
+      isError={isError}
+      StartAdornment={index === undefined ? undefined : index + 1}
+      EndAdornment={EndAdornment}
+    >
+      <SectionElementInput autoComplete="no" translate={''} value={element.value} placeholder={placeholder} onChange={onChange} />
     </FramedSectionElement>
   );
 };

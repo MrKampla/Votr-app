@@ -25,6 +25,7 @@ import { usePollTypesContracts } from '../utils/hooks/usePollTypesContracts';
 import { VotrPollFactory } from '../contracts/@types/VotrPollFactory';
 import { PollType } from '../constants/pollTypes';
 import { generateTransactionToast } from '../utils/generateTransactionToast';
+import PollTypeModal from '../components/create/PollTypeModal';
 
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
@@ -94,19 +95,10 @@ export default function Create() {
                 <SeparatedList>
                   <PropertiesElement break>
                     Poll type
-                    <BorderLessSelect
-                      value={state.pollType?.name}
-                      onChange={(e) =>
-                        dispatch({ type: 'SET_POLL_TYPE', poll: pollTypes.find((pollType) => pollType.name === e.target.value)! })
-                      }
-                      margin="0 2px 0 auto"
-                    >
-                      {pollTypes.map((pollType) => (
-                        <option key={pollType.name} value={pollType.name}>
-                          {pollType.name}
-                        </option>
-                      ))}
-                    </BorderLessSelect>
+                    <PollTypeModal
+                      selectedValue={state.pollType}
+                      onChange={(pollType) => dispatch({ type: 'SET_POLL_TYPE', poll: pollType })}
+                    />
                   </PropertiesElement>
                   <PropertiesElement break>
                     End date
@@ -154,6 +146,10 @@ export default function Create() {
 const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPollFactory) => {
   if (!pollFactory) {
     toast.error('Please connect to ethereum network');
+    return false;
+  }
+  if (!state.pollType) {
+    toast.error('Choose poll type');
     return false;
   }
   if (!state.title.length) {

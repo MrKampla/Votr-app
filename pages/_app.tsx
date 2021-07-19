@@ -1,6 +1,7 @@
-import type { AppProps /*, AppContext */ } from 'next/app';
+import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
+import { ModalProvider } from 'styled-react-modal';
 import Provider from '../components/theme/Provider';
 import Header from '../components/header';
 import { useWalletProvider, WalletContext } from '../components/providers/WalletConnector';
@@ -8,6 +9,7 @@ import { GlobalStyle } from '../components/theme';
 import ContractInitializer from '../components/providers/ContractInitializer';
 import { useEagerWalletConnection } from '../utils/hooks/useEagerWalletConnection';
 import { usePageLoadingIndicator } from '../utils/hooks/usePageLoadingIndicator';
+import { FadingBackground } from '../components/styled/create/VotrModalStyled';
 
 function VotrApp({ Component, pageProps }: AppProps) {
   const wallet = useWalletProvider();
@@ -20,29 +22,19 @@ function VotrApp({ Component, pageProps }: AppProps) {
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
       </Head>
       <Provider>
-        <Toaster />
         <WalletContext.Provider value={wallet}>
+          <Toaster />
           <ContractInitializer>
-            <GlobalStyle />
-            <Header />
-            <Component {...pageProps} />
+            <ModalProvider backgroundComponent={FadingBackground}>
+              <GlobalStyle />
+              <Header />
+              <Component {...pageProps} />
+            </ModalProvider>
           </ContractInitializer>
         </WalletContext.Provider>
       </Provider>
     </>
   );
 }
-
-// Only uncomment this method if you have blocking data requirements for
-// every single page in your application. This disables the ability to
-// perform automatic static optimization, causing every page in your app to
-// be server-side rendered.
-//
-// VotrApp.getInitialProps = async (appContext: AppContext) => {
-//   // calls page's `getInitialProps` and fills `appProps.pageProps`
-//   const appProps = await App.getInitialProps(appContext);
-
-//   return { ...appProps }
-// }
 
 export default VotrApp;
