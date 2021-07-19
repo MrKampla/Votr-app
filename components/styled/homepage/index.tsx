@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { darken } from 'polished';
 
 export const FramedContainer = styled.div`
-  border: 2px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+  border: 2px solid ${(props) => props.theme.border};
   grid-column: 2 / auto;
   border-radius: 32px;
   display: flex;

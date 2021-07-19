@@ -45,7 +45,7 @@ export const InputsWrapper = styled.div`
 export const FramedTitle = styled.div`
   color: ${(props) => props.theme.font};
   font-size: 24px;
-  border-bottom: 2px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+  border-bottom: 2px solid ${(props) => props.theme.border};
   padding: 16px 24px;
   min-height: fit-content;
   width: 100%;
@@ -54,7 +54,7 @@ export const FramedTitle = styled.div`
 `;
 
 export const FramedSectionContentWrapper = styled.div<{ minWidth?: string }>`
-  border: 2px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+  border: 2px solid ${(props) => props.theme.border};
   grid-column: 2 / auto;
   border-radius: 32px;
   display: flex;
@@ -106,9 +106,7 @@ export const WrappableUnFramedContainer = styled(UnframedContainer)`
 `;
 
 export const FramedElementWrapper = styled.div<{ isError?: boolean }>`
-  border: 1px solid
-    ${(props) =>
-      props.isError ? props.theme.danger : props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)'};
+  border: 1px solid ${(props) => (props.isError ? props.theme.danger : props.theme.border)};
   border-radius: 32px;
   background: ${(props) => props.theme.disabled};
   padding: 8px 16px;

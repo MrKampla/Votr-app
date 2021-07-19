@@ -10,10 +10,10 @@ export const Title = styled.h1`
 `;
 
 export const ListWrapper = styled.div`
-  border: 1px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+  border: 1px solid ${(props) => props.theme.border};
   width: 100%;
   & > div {
-    border-bottom: 1px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+    border-bottom: 1px solid ${(props) => props.theme.border};
     width: 100%;
     display: flex;
     flex-direction: column;

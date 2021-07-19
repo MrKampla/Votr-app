@@ -12,7 +12,7 @@ export const StyledModal = Modal.styled`
   max-height: 80vh;
   min-height: 70vh;
   border-radius: 24px;
-  border: 1px solid ${(props: any) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+  border: 1px solid ${(props: any) => props.theme.border};
   transition: opacity 0.3s ease-in-out;
   overflow-y: auto;
 `;
@@ -23,7 +23,7 @@ export const FadingBackground = styled(BaseModalBackground)`
 `;
 
 export const ModalOpenerWrapper = styled.div`
-  border: 1px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+  border: 1px solid ${(props) => props.theme.border};
   border-radius: 8px;
   color: ${(props) => props.theme.font};
   background: ${(props) => props.theme.disabled};
@@ -62,7 +62,7 @@ export const TitleContentWrapper = styled.div`
 
 export const AddressInputWrapper = styled.div`
   padding: 0 16px 16px 16px;
-  border-bottom: 2px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+  border-bottom: 2px solid ${(props) => props.theme.border};
 `;
 
 export const LoaderWrapper = styled.div`

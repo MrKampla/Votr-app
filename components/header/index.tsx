@@ -4,7 +4,7 @@ import ThemeSwitch from './ThemeSwitch';
 import WalletConnector from '../providers/WalletConnector';
 
 const HeaderWrapper = styled.div`
-  border-bottom: 1px solid ${(props) => (props.theme.mode === 'light' ? 'rgba(37, 39, 45, 0.16)' : 'rgba(249, 250, 251, 0.16)')};
+  border-bottom: 1px solid ${(props) => props.theme.border};
   padding: 0;
   margin: 0;
   width: 100%;
