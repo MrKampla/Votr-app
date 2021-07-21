@@ -1,8 +1,12 @@
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoClose } from 'react-icons/io5';
+import { TiTick } from 'react-icons/ti';
+import { CgClose } from 'react-icons/cg';
 import styled from 'styled-components';
 import Modal, { BaseModalBackground } from 'styled-react-modal';
 import Image from 'next/image';
+import { ButtonBase } from '../homepage';
+import { darken } from 'polished';
 
 export const StyledModal = Modal.styled`
   opacity: ${(props: { opacity: number }) => props.opacity};
@@ -16,6 +20,8 @@ export const StyledModal = Modal.styled`
   border: 1px solid ${(props: any) => props.theme.border};
   transition: opacity 0.3s ease-in-out;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const FadingBackground = styled(BaseModalBackground)`
@@ -72,8 +78,7 @@ export const LoaderWrapper = styled.div`
 
 export const ElementsList = styled.div`
   padding: 0 16px 16px 16px;
-  div {
-  }
+  color: ${(props) => props.theme.font};
 `;
 
 export const ElementCard = styled.div`
@@ -117,4 +122,39 @@ export const TokenLogoContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: flex-end;
+`;
+
+export const TickLogo = styled(TiTick)`
+  width: 100%;
+  height: 100%;
+  color: ${(props) => props.theme.success};
+`;
+
+export const ErrorLogo = styled(CgClose)`
+  width: 100%;
+  height: 100%;
+  color: ${(props) => props.theme.danger};
+`;
+
+export const TextCenterContainer = styled.div`
+  text-align: center;
+`;
+
+export const ClearCallbackButton = styled(ButtonBase)`
+  color: ${(props) => (props.theme.mode === 'light' ? props.theme.primary : props.theme.font)};
+  background-color: ${(props) => props.theme.danger};
+  margin: 8px;
+  &:hover {
+    background-color: ${(props) => darken(0.1, props.theme.danger)};
+  }
+`;
+
+export const MainContentWrapper = styled.div`
+  flex: 1;
+`;
+
+export const FooterWrapper = styled.div`
+  border-top: 2px solid ${(props) => props.theme.border};
+  display: flex;
+  justify-content: center;
 `;

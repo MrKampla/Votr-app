@@ -85,7 +85,8 @@ export const ActionButton = styled(ButtonBase)`
   }
 `;
 
-export const DisabledButton = styled(ButtonBase)`
+export const DisabledButton = styled(ButtonBase)<{ margin?: string }>`
+  margin: ${(props) => props.margin};
   background: ${(props) => props.theme.disabled};
   color: ${(props) => props.theme.font};
   cursor: not-allowed;

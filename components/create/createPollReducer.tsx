@@ -16,6 +16,7 @@ export const initialStateValue = {
   isVoteDelegationAllowed: false,
   pollType: undefined as PollType | undefined,
   underlyingToken: undefined as ERC20Token | undefined,
+  callbackAddress: '',
   endDate: new Date().toISOString(),
 };
 export type CreatePollStore = typeof initialStateValue;
@@ -30,6 +31,7 @@ export type CreatePollReducerAction =
   | { type: 'SET_TITLE'; title: string }
   | { type: 'SET_POLL_TYPE'; poll: PollType }
   | { type: 'SET_UNDERLYING_TOKEN'; token: ERC20Token }
+  | { type: 'SET_CALLBACK_ADDRESS'; address: string }
   | { type: 'SET_QUORUM'; value: number }
   | { type: 'SET_VOTE_DELEGATION'; value: boolean }
   | { type: 'SET_END_DATE'; value: string }
@@ -51,6 +53,8 @@ export function createPollReducer(state: CreatePollStore, action: CreatePollRedu
       return { ...stateCopy, pollType: action.poll };
     case 'SET_UNDERLYING_TOKEN':
       return { ...stateCopy, underlyingToken: action.token };
+    case 'SET_CALLBACK_ADDRESS':
+      return { ...stateCopy, callbackAddress: action.address };
     case 'SET_QUORUM':
       return { ...stateCopy, quorum: action.value };
     case 'SET_VOTE_DELEGATION':

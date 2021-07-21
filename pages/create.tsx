@@ -27,6 +27,7 @@ import { PollType } from '../constants/pollTypes';
 import { generateTransactionToast } from '../utils/generateTransactionToast';
 import PollTypeModal from '../components/create/PollTypeModal';
 import UnderlyingTokenModal from '../components/create/UnderlyingTokenModal';
+import CallbackModal from '../components/create/CallbackModal';
 
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
@@ -106,6 +107,13 @@ export default function Create() {
                     <UnderlyingTokenModal
                       selectedValue={state.underlyingToken}
                       onChange={(token) => dispatch({ type: 'SET_UNDERLYING_TOKEN', token })}
+                    />
+                  </PropertiesElement>
+                  <PropertiesElement break>
+                    Callback
+                    <CallbackModal
+                      selectedValue={state.callbackAddress}
+                      onChange={(address) => dispatch({ type: 'SET_CALLBACK_ADDRESS', address })}
                     />
                   </PropertiesElement>
                   <PropertiesElement break>
@@ -203,7 +211,7 @@ const createNewPoll = async (
         title: state.title,
         description: state.description,
         allowVoteDelegation: state.isVoteDelegationAllowed,
-        callbackContractAddress: ethers.constants.AddressZero,
+        callbackContractAddress: state.callbackAddress ?? ethers.constants.AddressZero,
         chairman: account,
         quorum: state.quorum,
         endDate: Math.round(new Date(state.endDate).getTime() / 1000),
