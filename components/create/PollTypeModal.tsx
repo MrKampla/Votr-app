@@ -52,7 +52,7 @@ const PollTypeModal: React.FC<PollTypeModalProps> = ({ onChange, selectedValue }
         setCustomPollTypeRequest('success');
       })
       .catch(() => {
-        toast.error('The given address does not belong to Votr poll type contract');
+        toast.error('The given address does not belong to a Votr poll type contract');
         setCustomPollTypeRequest('error');
       });
   }, [contractAddress, ethereum]);

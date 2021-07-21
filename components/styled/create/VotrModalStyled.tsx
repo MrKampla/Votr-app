@@ -2,11 +2,12 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoClose } from 'react-icons/io5';
 import styled from 'styled-components';
 import Modal, { BaseModalBackground } from 'styled-react-modal';
+import Image from 'next/image';
 
 export const StyledModal = Modal.styled`
   opacity: ${(props: { opacity: number }) => props.opacity};
   background-color: ${(props: any) => props.theme.primary};
-  width: 50vw;
+  width: 80vw;
   max-width: 420px;
   min-width: 280px;
   max-height: 80vh;
@@ -22,19 +23,19 @@ export const FadingBackground = styled(BaseModalBackground)`
   transition: opacity 0.3s ease-in-out;
 `;
 
-export const ModalOpenerWrapper = styled.div`
+export const ModalOpenerWrapper = styled.div<{ margin?: string }>`
   border: 1px solid ${(props) => props.theme.border};
   border-radius: 8px;
   color: ${(props) => props.theme.font};
   background: ${(props) => props.theme.disabled};
   padding: 8px;
-  margin-left: 8px;
+  margin: ${(props) => props.margin ?? '0 0 0 8px'};
   transition: 0.25s;
   font-size: 12px;
   display: flex;
   width: -webkit-fill-available;
   @media (max-width: ${(props) => props.theme.breakpoints.mobile}px) {
-    margin-left: 0;
+    margin: 0;
   }
 `;
 
@@ -95,7 +96,25 @@ export const ElementTitle = styled.div`
   color: ${(props) => props.theme.cta};
 `;
 
-export const ElementDescription = styled.div`
+export const ElementDescription = styled.div<{ color?: string }>`
   font-size: 14px;
-  color: ${(props) => props.theme.font};
+  color: ${(props) => props.color ?? props.theme.font};
+`;
+
+export const ElementLogo = styled(Image)`
+  margin-left: auto;
+`;
+
+export const TokenCardContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap;
+`;
+
+export const TokenLogoContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
 `;

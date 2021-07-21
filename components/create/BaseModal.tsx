@@ -5,8 +5,9 @@ interface BaseModalProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   selectedValue?: React.ReactNode;
+  margin?: string;
 }
-const BaseModal: React.FC<BaseModalProps> = ({ children, isOpen, setIsOpen, selectedValue }) => {
+const BaseModal: React.FC<BaseModalProps> = ({ children, isOpen, setIsOpen, selectedValue, margin }) => {
   const [opacity, setOpacity] = useState(0);
   function toggleModal() {
     setOpacity(0);
@@ -27,7 +28,7 @@ const BaseModal: React.FC<BaseModalProps> = ({ children, isOpen, setIsOpen, sele
   }
 
   return (
-    <ModalOpenerWrapper>
+    <ModalOpenerWrapper margin={margin}>
       {selectedValue}
       <OpenModalIcon onClick={toggleModal} />
       <StyledModal

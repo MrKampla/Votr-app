@@ -26,6 +26,7 @@ import { VotrPollFactory } from '../contracts/@types/VotrPollFactory';
 import { PollType } from '../constants/pollTypes';
 import { generateTransactionToast } from '../utils/generateTransactionToast';
 import PollTypeModal from '../components/create/PollTypeModal';
+import UnderlyingTokenModal from '../components/create/UnderlyingTokenModal';
 
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
@@ -101,6 +102,13 @@ export default function Create() {
                     />
                   </PropertiesElement>
                   <PropertiesElement break>
+                    Token
+                    <UnderlyingTokenModal
+                      selectedValue={state.underlyingToken}
+                      onChange={(token) => dispatch({ type: 'SET_UNDERLYING_TOKEN', token })}
+                    />
+                  </PropertiesElement>
+                  <PropertiesElement break>
                     End date
                     <BorderLessDatePicker
                       value={state.endDate.substring(0, 16)}
@@ -160,6 +168,10 @@ const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPol
     toast.error('Add description to poll');
     return false;
   }
+  if (state.choices.length < 2) {
+    toast.error('Add at least two choices for users to choose from');
+    return false;
+  }
   if (state.voters.some((voter) => voter.value === '')) {
     toast.error('There cannot be empty voter address');
     return false;
@@ -183,14 +195,14 @@ const createNewPoll = async (
     const tx = await pollFactory.createPoll(
       state.pollType?.address ?? pollTypes[0].address,
       {
-        basedOnToken: ethers.constants.AddressZero,
-        name: 'vToken',
-        symbol: 'VTK',
+        basedOnToken: state.underlyingToken?.address ?? ethers.constants.AddressZero,
+        name: state.underlyingToken?.name ?? 'vToken',
+        symbol: state.underlyingToken?.symbol ?? 'VTK',
       },
       {
         title: state.title,
         description: state.description,
-        allowVoteDelegation: true,
+        allowVoteDelegation: state.isVoteDelegationAllowed,
         callbackContractAddress: ethers.constants.AddressZero,
         chairman: account,
         quorum: state.quorum,

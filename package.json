@@ -9,6 +9,7 @@
     "typechain": "typechain --target=ethers-v5 --out-dir contracts/@types './contracts/*.json'"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "date-fns": "^2.19.0",
     "ethers": "^5.4.1",
     "next": "^11.0.1",
