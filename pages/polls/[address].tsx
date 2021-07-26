@@ -32,10 +32,10 @@ import {
 import { VotrPoll } from '../../contracts/@types';
 import createContract from '../../utils/createContract';
 import { usePollData } from '../../utils/hooks/usePollData';
-import shortenAddress from '../../utils/shortenAddress';
 import VotrPollContract from '../../contracts/VotrPoll.json';
 import { generateTransactionToast } from '../../utils/generateTransactionToast';
 import VotingResult from '../../components/polls/vote/VotingResult';
+import AddressLink from '../../components/polls/vote/AddressLink';
 
 const PollVotePage: React.FC = () => {
   const router = useRouter();
@@ -106,7 +106,7 @@ const PollVotePage: React.FC = () => {
                       <ReadOnlyListElement
                         key={id}
                         id={id}
-                        StartAdornment={<>{shortenAddress(vote.voterAddress)}</>}
+                        StartAdornment={<AddressLink address={vote.voterAddress} />}
                         value={poll.choices[vote.choiceId]?.value ?? vote.choiceId}
                         EndAdornment={<>{`${vote.amount} ${poll?.underlyingToken?.symbol}`}</>}
                       />

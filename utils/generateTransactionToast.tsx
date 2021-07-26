@@ -2,7 +2,7 @@
 import toast from 'react-hot-toast';
 import { IoMdOpen } from 'react-icons/io';
 import styled from 'styled-components';
-import { generateLinkToEtherscan } from './generateLinkToEtherscan';
+import { generateTransactionLinkToEtherscan } from './generateLinkToEtherscan';
 
 const TransactionLinkWrapper = styled.a`
   display: flex;
@@ -16,7 +16,7 @@ const TransactionLinkWrapper = styled.a`
 `;
 
 export const generateTransactionToast = async (receiptPromise: Promise<any>, transactionHash: string) => {
-  const linkToTransaction = await generateLinkToEtherscan(transactionHash);
+  const linkToTransaction = await generateTransactionLinkToEtherscan(transactionHash);
   toast.promise(
     receiptPromise,
     {

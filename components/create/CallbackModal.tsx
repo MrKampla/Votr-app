@@ -19,8 +19,8 @@ import {
 import EditableListElement from './EditableListElement';
 import { WalletContext } from '../providers/WalletConnector';
 import { RequestStatus } from '../../constants/requestStatus';
-import shortenAddress from '../../utils/shortenAddress';
 import { DisabledButton } from '../styled/homepage';
+import AddressLink from '../polls/vote/AddressLink';
 
 const CallbackModal = ({ onChange, selectedValue, isReadOnly }: ModalProps<string>) => {
   const { ethereum } = useContext(WalletContext);
@@ -57,7 +57,7 @@ const CallbackModal = ({ onChange, selectedValue, isReadOnly }: ModalProps<strin
       margin={'0 0 0 10px'}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      selectedValue={selectedValue ? shortenAddress(selectedValue) : ''}
+      selectedValue={selectedValue ? <AddressLink address={selectedValue} /> : ''}
       isReadOnly={isReadOnly}
     >
       <TitleContentWrapper>
