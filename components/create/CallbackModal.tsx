@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import toast from 'react-hot-toast';
 import { ethers } from 'ethers';
-import BaseModal from './BaseModal';
+import BaseModal, { ModalProps } from './BaseModal';
 import {
   AddressInputWrapper,
   CloseModalIcon,
@@ -22,12 +22,7 @@ import { RequestStatus } from '../../constants/requestStatus';
 import shortenAddress from '../../utils/shortenAddress';
 import { DisabledButton } from '../styled/homepage';
 
-interface CallbackModalProps {
-  onChange: (pollType: string) => void;
-  selectedValue?: string;
-}
-
-const CallbackModal: React.FC<CallbackModalProps> = ({ onChange, selectedValue }) => {
+const CallbackModal = ({ onChange, selectedValue, isReadOnly }: ModalProps<string>) => {
   const { ethereum } = useContext(WalletContext);
   const [isOpen, setIsOpen] = useState(false);
   const [callbackContractAddress, setCallbackContractAddress] = useState<string>();
@@ -46,9 +41,9 @@ const CallbackModal: React.FC<CallbackModalProps> = ({ onChange, selectedValue }
           throw new Error('Selected address does not belong to any contract');
         }
         setCallbackContractCheckRequest('success');
-        onChange(callbackContractAddress!);
+        onChange?.(callbackContractAddress!);
       } catch (err) {
-        onChange('');
+        onChange?.('');
         toast.error('The given contract cannot be called by Votr');
         setCallbackContractCheckRequest('error');
       }
@@ -63,6 +58,7 @@ const CallbackModal: React.FC<CallbackModalProps> = ({ onChange, selectedValue }
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       selectedValue={selectedValue ? shortenAddress(selectedValue) : ''}
+      isReadOnly={isReadOnly}
     >
       <TitleContentWrapper>
         <div>Select callback contract</div>
@@ -107,7 +103,7 @@ const CallbackModal: React.FC<CallbackModalProps> = ({ onChange, selectedValue }
         ) : (
           <ClearCallbackButton
             onClick={() => {
-              onChange('');
+              onChange?.('');
               setCallbackContractAddress('');
               setCallbackContractCheckRequest('idle');
             }}

@@ -81,8 +81,8 @@ export const ElementsList = styled.div`
   color: ${(props) => props.theme.font};
 `;
 
-export const ElementCard = styled.div`
-  border: 1px solid ${({ theme }) => theme.font};
+export const ElementCard = styled.div<{ isSelected?: boolean }>`
+  border: 1px solid ${({ theme, isSelected }) => (isSelected ? theme.cta : theme.border)};
   border-radius: 8px;
   height: fit-content;
   display: flex;
@@ -118,6 +118,10 @@ export const TokenCardContainer = styled.div`
   white-space: nowrap;
 `;
 
+export const TokenDetailsContainer = styled.div`
+  text-align: left;
+`;
+
 export const TokenLogoContainer = styled.div`
   width: 100%;
   display: flex;
@@ -151,6 +155,7 @@ export const ClearCallbackButton = styled(ButtonBase)`
 
 export const MainContentWrapper = styled.div`
   flex: 1;
+  text-align: center;
 `;
 
 export const FooterWrapper = styled.div`

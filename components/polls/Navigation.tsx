@@ -8,7 +8,7 @@ const Navigation: React.FC = ({}) => {
   return (
     <NavWrapper>
       <Link href={Routes.Polls} passHref>
-        <LinkText isSelected={router.pathname === Routes.Polls}>Polls</LinkText>
+        <LinkText isSelected={router.pathname.includes(Routes.Polls)}>Polls</LinkText>
       </Link>
       <Link href={Routes.Create} passHref>
         <LinkText isSelected={router.pathname === Routes.Create}>Create</LinkText>

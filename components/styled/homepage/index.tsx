@@ -64,7 +64,7 @@ export const DescriptionWrapper = styled.div`
   flex-direction: column;
 `;
 
-export const ButtonBase = styled.button`
+export const ButtonBase = styled.button<{ margin?: string }>`
   padding: 16px 32px;
   font-size: 14px;
   font-weight: bold;
@@ -75,6 +75,7 @@ export const ButtonBase = styled.button`
   color: ${(props) => (props.theme.mode === 'light' ? props.theme.font : props.theme.primary)};
   background: ${(props) => props.theme.disabled};
   margin-top: 16px;
+  margin: ${(props) => props.margin};
   transition: 0.25s;
 `;
 
@@ -85,8 +86,7 @@ export const ActionButton = styled(ButtonBase)`
   }
 `;
 
-export const DisabledButton = styled(ButtonBase)<{ margin?: string }>`
-  margin: ${(props) => props.margin};
+export const DisabledButton = styled(ButtonBase)`
   background: ${(props) => props.theme.disabled};
   color: ${(props) => props.theme.font};
   cursor: not-allowed;

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import toast from 'react-hot-toast';
 import { ethers } from 'ethers';
-import BaseModal from './BaseModal';
+import BaseModal, { ModalProps } from './BaseModal';
 import {
   AddressInputWrapper,
   CloseModalIcon,
@@ -22,12 +22,7 @@ import { WalletContext } from '../providers/WalletConnector';
 import { PollType } from '../../constants/pollTypes';
 import { RequestStatus } from '../../constants/requestStatus';
 
-interface PollTypeModalProps {
-  onChange: (pollType: PollType) => void;
-  selectedValue?: PollType;
-}
-
-const PollTypeModal: React.FC<PollTypeModalProps> = ({ onChange, selectedValue }) => {
+const PollTypeModal = ({ onChange, selectedValue, isReadOnly }: ModalProps<PollType>) => {
   const defaultPollTypes = usePollTypesContracts();
   const { ethereum } = useContext(WalletContext);
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +55,7 @@ const PollTypeModal: React.FC<PollTypeModalProps> = ({ onChange, selectedValue }
   const listOfPolls = customPollType ? [customPollType] : defaultPollTypes;
 
   return (
-    <BaseModal isOpen={isOpen} setIsOpen={setIsOpen} selectedValue={selectedValue?.name}>
+    <BaseModal isOpen={isOpen} setIsOpen={setIsOpen} selectedValue={selectedValue?.name} isReadOnly={isReadOnly}>
       <TitleContentWrapper>
         <div>Select a poll type</div>
         <CloseModalIcon onClick={() => setIsOpen(false)} />
@@ -87,7 +82,7 @@ const PollTypeModal: React.FC<PollTypeModalProps> = ({ onChange, selectedValue }
             <ElementCard
               key={pollType.address}
               onClick={() => {
-                onChange(pollType);
+                onChange?.(pollType);
                 setIsOpen(false);
               }}
             >

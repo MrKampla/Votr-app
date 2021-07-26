@@ -83,6 +83,9 @@ export function createPollReducer(state: CreatePollStore, action: CreatePollRedu
       return { ...stateCopy };
     case 'REMOVE_VOTER':
       stateCopy.voters = stateCopy.voters.filter((voter) => voter !== action.voter);
+      if (stateCopy.voters.length < stateCopy.quorum) {
+        stateCopy.quorum = stateCopy.voters.length;
+      }
       return { ...stateCopy };
     default:
       return state;

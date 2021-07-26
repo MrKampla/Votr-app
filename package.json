@@ -12,6 +12,7 @@
     "axios": "^0.21.1",
     "date-fns": "^2.19.0",
     "ethers": "^5.4.1",
+    "lodash": "^4.17.21",
     "next": "^11.0.1",
     "nprogress": "^0.2.0",
     "polished": "^4.1.1",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@typechain/ethers-v5": "^7.0.1",
     "@typechain/truffle-v5": "^4.0.1",
+    "@types/lodash": "^4.14.171",
     "@types/node": "12.0.12",
     "@types/nprogress": "^0.2.0",
     "@types/react": "16.8.23",

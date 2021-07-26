@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { ModalOpenerWrapper, OpenModalIcon, StyledModal } from '../styled/create/VotrModalStyled';
+
 interface BaseModalProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   selectedValue?: React.ReactNode;
   margin?: string;
+  isReadOnly?: boolean;
 }
-const BaseModal: React.FC<BaseModalProps> = ({ children, isOpen, setIsOpen, selectedValue, margin }) => {
+
+export type ModalProps<T> = { selectedValue?: T; isReadOnly?: boolean; onChange?: (pollType: T) => void };
+
+const BaseModal: React.FC<BaseModalProps> = ({ children, isOpen, setIsOpen, selectedValue, margin, isReadOnly }) => {
   const [opacity, setOpacity] = useState(0);
   function toggleModal() {
     setOpacity(0);
@@ -30,7 +35,7 @@ const BaseModal: React.FC<BaseModalProps> = ({ children, isOpen, setIsOpen, sele
   return (
     <ModalOpenerWrapper margin={margin}>
       {selectedValue}
-      <OpenModalIcon onClick={toggleModal} />
+      {!isReadOnly && <OpenModalIcon onClick={toggleModal} />}
       <StyledModal
         isOpen={isOpen}
         onBackgroundClick={toggleModal}

@@ -66,7 +66,9 @@ export default function Create() {
                       placeholder="choice"
                       index={index}
                       EndAdornment={<CloseIcon onClick={() => dispatch({ type: 'REMOVE_CHOICE', choice })} />}
-                      onChange={(e) => dispatch({ type: 'CHANGE_CHOICE', choice: { id: choice.id, value: e.target.value } })}
+                      onChange={(e) =>
+                        dispatch({ type: 'CHANGE_CHOICE', choice: { id: choice.id, value: e.target.value } })
+                      }
                     />
                   ))}
                   <FramedSectionButton onClick={() => dispatch({ type: 'ADD_CHOICE' })}>Add choice</FramedSectionButton>
@@ -83,10 +85,14 @@ export default function Create() {
                       placeholder="address"
                       index={index}
                       EndAdornment={<CloseIcon onClick={() => dispatch({ type: 'REMOVE_VOTER', voter })} />}
-                      onChange={(e) => dispatch({ type: 'CHANGE_VOTER', voter: { id: voter.id, value: e.target.value } })}
+                      onChange={(e) =>
+                        dispatch({ type: 'CHANGE_VOTER', voter: { id: voter.id, value: e.target.value } })
+                      }
                     />
                   ))}
-                  <FramedSectionButton onClick={() => dispatch({ type: 'ADD_VOTER' })}>Add voter&apos;s address</FramedSectionButton>
+                  <FramedSectionButton onClick={() => dispatch({ type: 'ADD_VOTER' })}>
+                    Add voter&apos;s address
+                  </FramedSectionButton>
                 </SeparatedList>
               </FramedSection>
             </Box>
@@ -120,7 +126,9 @@ export default function Create() {
                     End date
                     <BorderLessDatePicker
                       value={state.endDate.substring(0, 16)}
-                      onChange={(e) => dispatch({ type: 'SET_END_DATE', value: new Date(e.target.value).toISOString() })}
+                      onChange={(e) =>
+                        dispatch({ type: 'SET_END_DATE', value: new Date(e.target.value).toISOString() })
+                      }
                       type="datetime-local"
                       margin="0 0 0 auto"
                     />
@@ -149,7 +157,9 @@ export default function Create() {
                     />
                   </PropertiesElement>
                 </SeparatedList>
-                <FramedSectionButton onClick={() => createNewPoll(state, { account, pollTypes, pollFactory })}>Publish</FramedSectionButton>
+                <FramedSectionButton onClick={() => createNewPoll(state, { account, pollTypes, pollFactory })}>
+                  Publish
+                </FramedSectionButton>
               </FramedSection>
             </Box>
           </WrappableBoxColumn>
@@ -203,7 +213,7 @@ const createNewPoll = async (
     const tx = await pollFactory.createPoll(
       state.pollType?.address ?? pollTypes[0].address,
       {
-        basedOnToken: state.underlyingToken?.address ?? ethers.constants.AddressZero,
+        basedOnToken: state.underlyingToken?.address || ethers.constants.AddressZero,
         name: state.underlyingToken?.name ?? 'vToken',
         symbol: state.underlyingToken?.symbol ?? 'VTK',
       },
@@ -211,7 +221,7 @@ const createNewPoll = async (
         title: state.title,
         description: state.description,
         allowVoteDelegation: state.isVoteDelegationAllowed,
-        callbackContractAddress: state.callbackAddress ?? ethers.constants.AddressZero,
+        callbackContractAddress: state.callbackAddress || ethers.constants.AddressZero,
         chairman: account,
         quorum: state.quorum,
         endDate: Math.round(new Date(state.endDate).getTime() / 1000),
