@@ -43,7 +43,7 @@ const PollVotePage: React.FC = () => {
   const { address } = router.query;
   const [selectedChoiceId, setSelectedChoiceId] = useState<number | undefined>(undefined);
   const [poll, pollDataStatus, refresh] = usePollData(address as string);
-  const canCallbackBeCalled = !poll?.isCallbackCalled && poll?.quorumReached;
+  const canCallbackBeCalled = !poll?.isCallbackCalled && poll?.quorumReached && poll?.isFinished;
 
   const vote = useCallback(async () => {
     if (selectedChoiceId === undefined) {
@@ -188,10 +188,15 @@ const PollVotePage: React.FC = () => {
               <Box padding="32px 32px 0 0" paddingMobile="16px 0">
                 <FramedSection title={'Callback'} minWidth="100%">
                   {poll?.isCallbackCalled && (
-                    <CallbackBlockerWrapper>Callback has already been executed</CallbackBlockerWrapper>
+                    <CallbackBlockerWrapper>
+                      Callback has already been executed <AddressLink address={poll.callbackAddress} />
+                    </CallbackBlockerWrapper>
                   )}
                   {poll?.quorumReached !== undefined && !poll.quorumReached && (
                     <CallbackBlockerWrapper>Quorum not reached</CallbackBlockerWrapper>
+                  )}
+                  {poll?.isFinished !== undefined && !poll.isFinished && (
+                    <CallbackBlockerWrapper>Poll has not yet ended</CallbackBlockerWrapper>
                   )}
                   <ExecuteCallbackWrapper>
                     {canCallbackBeCalled ? (
