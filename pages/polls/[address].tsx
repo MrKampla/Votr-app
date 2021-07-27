@@ -68,7 +68,9 @@ const PollVotePage: React.FC = () => {
     const tx = await poll.callback();
     const receiptPromise = tx.wait();
     generateTransactionToast(receiptPromise, tx.hash);
-  }, [address, ethereum]);
+    await receiptPromise;
+    refresh();
+  }, [address, ethereum, refresh]);
 
   return (
     <>
