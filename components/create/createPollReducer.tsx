@@ -3,8 +3,8 @@ import { ERC20Token } from './UnderlyingTokenModal';
 
 export const initialStateValue = {
   voters: [
-    { id: 0, value: '' },
-    { id: 1, value: '' },
+    { id: 0, value: '', votingPower: '1' },
+    { id: 1, value: '', votingPower: '1' },
   ],
   choices: [
     { id: 0, value: '' },
@@ -37,6 +37,7 @@ export type CreatePollReducerAction =
   | { type: 'SET_END_DATE'; value: string }
   | { type: 'ADD_VOTER' }
   | { type: 'CHANGE_VOTER'; voter: ListElement }
+  | { type: 'CHANGE_VOTING_POWER'; id: number; power: string }
   | { type: 'REMOVE_VOTER'; voter: ListElement }
   | { type: 'ADD_CHOICE' }
   | { type: 'CHANGE_CHOICE'; choice: ListElement }
@@ -56,6 +57,9 @@ export function createPollReducer(state: CreatePollStore, action: CreatePollRedu
     case 'SET_CALLBACK_ADDRESS':
       return { ...stateCopy, callbackAddress: action.address };
     case 'SET_QUORUM':
+      if (isNaN(+action.value) || action.value > 1_000_000_000) {
+        return { ...stateCopy };
+      }
       return { ...stateCopy, quorum: action.value };
     case 'SET_VOTE_DELEGATION':
       return { ...stateCopy, isVoteDelegationAllowed: action.value };
@@ -75,7 +79,15 @@ export function createPollReducer(state: CreatePollStore, action: CreatePollRedu
       stateCopy.choices = stateCopy.choices.filter((choice) => choice.id !== action.choice.id);
       return { ...stateCopy };
     case 'ADD_VOTER':
-      stateCopy.voters.push({ id: Math.max(...state.voters.map((x) => x.id)) + 1, value: '' });
+      const newVoterId = stateCopy.voters.length === 0 ? 0 : Math.max(...state.voters.map((x) => x.id)) + 1;
+      stateCopy.voters.push({ id: newVoterId, value: '', votingPower: '1' });
+      return { ...stateCopy };
+    case 'CHANGE_VOTING_POWER':
+      if (isNaN(+action.power) || action.power.length > 16) {
+        return { ...stateCopy };
+      }
+      const voterToChangePower = stateCopy.voters.find((voter) => voter.id === action.id)!;
+      voterToChangePower.votingPower = action.power;
       return { ...stateCopy };
     case 'CHANGE_VOTER':
       const voter = stateCopy.voters.find((voter) => voter.id === action.voter.id)!;

@@ -8,28 +8,35 @@ interface EditableListElementProps {
     value: string;
   };
   placeholder: string;
-  index?: ReactNode | JSX.Element;
+  StartAdornment?: ReactNode | JSX.Element;
   isError?: boolean;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
   EndAdornment?: React.ReactNode | JSX.Element;
 }
 
-const EditableListElement: React.FC<EditableListElementProps> = ({ element, index, onChange, placeholder, isError, EndAdornment }) => {
-  const startAdornment = createStartAdornment(index);
+const EditableListElement: React.FC<EditableListElementProps> = ({
+  element,
+  StartAdornment,
+  onChange,
+  placeholder,
+  isError,
+  EndAdornment,
+}) => {
   return (
-    <FramedSectionElement key={element.id} isError={isError} StartAdornment={startAdornment} EndAdornment={EndAdornment}>
-      <SectionElementInput autoComplete="no" translate={''} value={element.value} placeholder={placeholder} onChange={onChange} />
+    <FramedSectionElement
+      key={element.id}
+      isError={isError}
+      StartAdornment={StartAdornment}
+      EndAdornment={EndAdornment}
+    >
+      <SectionElementInput
+        autoComplete="no"
+        translate={''}
+        value={element.value}
+        placeholder={placeholder}
+        onChange={onChange}
+      />
     </FramedSectionElement>
   );
 };
 export default EditableListElement;
-
-function createStartAdornment(index: ReactNode | JSX.Element) {
-  if (typeof index === 'string') {
-    return <>{index}</>;
-  }
-  if (typeof index === 'number') {
-    return <>{index + 1}</>;
-  }
-  return index;
-}

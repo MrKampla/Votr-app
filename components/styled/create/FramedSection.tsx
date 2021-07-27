@@ -17,7 +17,8 @@ export const FramedSectionButton = styled(FramedElementWrapper)`
   padding: 9px 16px;
   font-weight: 900;
   &:hover {
-    background: ${(props) => (props.theme.mode === 'light' ? darken(0.05, props.theme.disabled) : lighten(0.05, props.theme.disabled))};
+    background: ${(props) =>
+      props.theme.mode === 'light' ? darken(0.05, props.theme.disabled) : lighten(0.05, props.theme.disabled)};
   }
   * {
     cursor: pointer;

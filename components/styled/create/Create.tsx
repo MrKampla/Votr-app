@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import TextareaAutosize from 'react-textarea-autosize';
 import { FramedContainer, UnframedContainer } from '../homepage';
 
@@ -115,13 +115,14 @@ export const FramedElementWrapper = styled.div<{ isError?: boolean }>`
   justify-content: center;
   align-items: center;
   transition: 0.25s;
+  flex: 1;
 `;
 
 export const FramedSectionContent = styled.div`
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1;
 `;
 
 export const SeparatedList = styled.div`
@@ -172,4 +173,32 @@ export const ThemedCheckbox = styled.input<{ margin?: string }>`
   outline: none;
   cursor: pointer;
   margin: ${(props) => props.margin};
+`;
+
+const InputBase = css`
+  -webkit-appearance: none;
+  background-color: ${(props) => props.theme.disabled};
+  color: ${(props) => props.theme.font};
+  border: 1px solid ${(props) => props.theme.border};
+`;
+
+export const VotingPowerInput = styled.input`
+  ${InputBase}
+  border-radius: 32px;
+  padding: 4px 8px;
+  font-weight: bold;
+  width: 1ch;
+`;
+
+export const QuorumInput = styled.input`
+  ${InputBase}
+  width: -webkit-fill-available;
+  width: stretch;
+  border-radius: 8px;
+  padding: 8px;
+  text-align: right;
+  margin-left: 11px;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}px) {
+    margin: 0;
+  }
 `;

@@ -13,6 +13,8 @@ import {
   BorderLessDatePicker,
   ThemedCheckbox,
   WrappableUnFramedContainer,
+  QuorumInput,
+  VoterElementWrapper,
 } from '../components/styled/create/Create';
 import { FramedSectionButton, PropertiesElement, CloseIcon } from '../components/styled/create/FramedSection';
 import FramedSection from '../components/create/FramedSection';
@@ -28,6 +30,7 @@ import { generateTransactionToast } from '../utils/generateTransactionToast';
 import PollTypeModal from '../components/create/PollTypeModal';
 import UnderlyingTokenModal from '../components/create/UnderlyingTokenModal';
 import CallbackModal from '../components/create/CallbackModal';
+import { VotingPowerInput } from '../components/styled/create/Create';
 
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
@@ -64,7 +67,7 @@ export default function Create() {
                       key={choice.id}
                       element={choice}
                       placeholder="choice"
-                      index={index}
+                      StartAdornment={index}
                       EndAdornment={<CloseIcon onClick={() => dispatch({ type: 'REMOVE_CHOICE', choice })} />}
                       onChange={(e) =>
                         dispatch({ type: 'CHANGE_CHOICE', choice: { id: choice.id, value: e.target.value } })
@@ -78,12 +81,23 @@ export default function Create() {
             <Box padding="16px 32px 16px 32px" paddingMobile="16px 0">
               <FramedSection title={'Voters'} minWidth="100%">
                 <SeparatedList>
-                  {state.voters.map((voter, index) => (
+                  {state.voters.map((voter) => (
                     <EditableListElement
                       key={voter.id}
                       element={voter}
                       placeholder="address"
-                      index={index}
+                      StartAdornment={
+                        <VotingPowerInput
+                          id={`votingPowerInput${voter.id}`}
+                          value={voter.votingPower}
+                          autoComplete="no"
+                          onChange={(e) => {
+                            dispatch({ type: 'CHANGE_VOTING_POWER', id: voter.id, power: e.target.value });
+                            const inputRef = document.getElementById(`votingPowerInput${voter.id}`);
+                            inputRef!.style.width = `${e.target.value.length || 1}ch`;
+                          }}
+                        />
+                      }
                       EndAdornment={<CloseIcon onClick={() => dispatch({ type: 'REMOVE_VOTER', voter })} />}
                       onChange={(e) =>
                         dispatch({ type: 'CHANGE_VOTER', voter: { id: voter.id, value: e.target.value } })
@@ -133,19 +147,26 @@ export default function Create() {
                       margin="0 0 0 auto"
                     />
                   </PropertiesElement>
-                  <PropertiesElement>
+                  <PropertiesElement break>
                     Quorum
-                    <BorderLessSelect
-                      value={state.quorum}
-                      onChange={(e) => dispatch({ type: 'SET_QUORUM', value: +e.target.value })}
-                      margin="0 2px 0 auto"
-                    >
-                      {state.voters.map((_, id) => (
-                        <option key={id} value={id + 1}>
-                          {id + 1}
-                        </option>
-                      ))}
-                    </BorderLessSelect>
+                    {state.voters.length === 0 ? (
+                      <QuorumInput
+                        value={state.quorum}
+                        onChange={(e) => dispatch({ type: 'SET_QUORUM', value: +e.target.value })}
+                      />
+                    ) : (
+                      <BorderLessSelect
+                        value={state.quorum}
+                        onChange={(e) => dispatch({ type: 'SET_QUORUM', value: +e.target.value })}
+                        margin="0 2px 0 auto"
+                      >
+                        {state.voters.map((_, id) => (
+                          <option key={id} value={id + 1}>
+                            {id + 1}
+                          </option>
+                        ))}
+                      </BorderLessSelect>
+                    )}
                   </PropertiesElement>
                   <PropertiesElement>
                     Allow vote delegation
@@ -198,6 +219,10 @@ const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPol
     toast.error('Not all voters are valid ethereum addresses');
     return false;
   }
+  if (state.voters.length === 0 && !state.underlyingToken) {
+    toast.error('There are no voters specified, plese add some addresses or choose an underlying ERC20 token');
+    return false;
+  }
   return true;
 };
 
@@ -229,7 +254,7 @@ const createNewPoll = async (
       state.choices.map((choice) => choice.value),
       state.voters.map((voter) => ({
         addr: voter.value,
-        allowedVotes: 1,
+        allowedVotes: voter.votingPower,
       }))
     );
     const receiptPromise = tx.wait();

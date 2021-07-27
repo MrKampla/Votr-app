@@ -8,7 +8,12 @@ interface FramedSectionElementProps {
   isError?: boolean;
 }
 
-export const FramedSectionElement: React.FC<FramedSectionElementProps> = ({ StartAdornment, EndAdornment, isError, children }) => {
+export const FramedSectionElement: React.FC<FramedSectionElementProps> = ({
+  StartAdornment,
+  EndAdornment,
+  isError,
+  children,
+}) => {
   return (
     <FramedElementWrapper isError={isError}>
       <ElementKey>{StartAdornment}</ElementKey>
