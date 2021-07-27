@@ -36,6 +36,7 @@ import VotrPollContract from '../../contracts/VotrPoll.json';
 import { generateTransactionToast } from '../../utils/generateTransactionToast';
 import VotingResult from '../../components/polls/vote/VotingResult';
 import AddressLink from '../../components/polls/vote/AddressLink';
+import BackToPollsLink from '../../components/polls/vote/BackToPollsLink';
 
 const PollVotePage: React.FC = () => {
   const router = useRouter();
@@ -80,6 +81,7 @@ const PollVotePage: React.FC = () => {
           <BoxColumn>
             <Box paddingMobile="8px">
               <InputsWrapper>
+                <BackToPollsLink />
                 <BorderLessInput value={poll?.title} translate="" disabled />
                 <BorderLessDescription value={poll?.description} translate="" disabled />
               </InputsWrapper>
