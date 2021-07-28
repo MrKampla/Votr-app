@@ -14,7 +14,6 @@ import {
   ThemedCheckbox,
   WrappableUnFramedContainer,
   QuorumInput,
-  VoterElementWrapper,
 } from '../components/styled/create/Create';
 import { FramedSectionButton, PropertiesElement, CloseIcon } from '../components/styled/create/FramedSection';
 import FramedSection from '../components/create/FramedSection';

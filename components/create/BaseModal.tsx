@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Dispatch, SetStateAction } from 'react';
+import useStyledModal from '../../utils/hooks/useStyledModal';
 import { ModalOpenerWrapper, OpenModalIcon, StyledModal } from '../styled/create/VotrModalStyled';
 
 interface BaseModalProps {
@@ -13,24 +14,7 @@ interface BaseModalProps {
 export type ModalProps<T> = { selectedValue?: T; isReadOnly?: boolean; onChange?: (pollType: T) => void };
 
 const BaseModal: React.FC<BaseModalProps> = ({ children, isOpen, setIsOpen, selectedValue, margin, isReadOnly }) => {
-  const [opacity, setOpacity] = useState(0);
-  function toggleModal() {
-    setOpacity(0);
-    setIsOpen(!isOpen);
-  }
-
-  function afterOpen() {
-    setTimeout(() => {
-      setOpacity(1);
-    }, 100);
-  }
-
-  function beforeClose() {
-    return new Promise((resolve) => {
-      setOpacity(0);
-      setTimeout(resolve, 300);
-    });
-  }
+  const { opacity, afterOpen, beforeClose, toggleModal } = useStyledModal({ isOpen, setIsOpen });
 
   return (
     <ModalOpenerWrapper margin={margin}>

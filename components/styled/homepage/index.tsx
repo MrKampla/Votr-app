@@ -64,19 +64,20 @@ export const DescriptionWrapper = styled.div`
   flex-direction: column;
 `;
 
-export const ButtonBase = styled.button<{ margin?: string }>`
+export const ButtonBase = styled.button<{ margin?: string; fullWidth?: boolean; autoColor?: boolean }>`
   padding: 16px 32px;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   border: none;
   border-radius: 32px;
-  width: fit-content;
+  width: ${(props) => (props.fullWidth ? '100%' : 'fit-content')};
   color: ${(props) => (props.theme.mode === 'light' ? props.theme.font : props.theme.primary)};
   background: ${(props) => props.theme.disabled};
   margin-top: 16px;
   margin: ${(props) => props.margin};
   transition: 0.25s;
+  color: ${(props) => (props.autoColor ? props.theme.font : 'inherit')};
 `;
 
 export const ActionButton = styled(ButtonBase)`

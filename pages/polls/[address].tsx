@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { ethers } from 'ethers';
@@ -37,6 +37,7 @@ import { generateTransactionToast } from '../../utils/generateTransactionToast';
 import VotingResult from '../../components/polls/vote/VotingResult';
 import AddressLink from '../../components/polls/vote/AddressLink';
 import BackToPollsLink from '../../components/polls/vote/BackToPollsLink';
+import VoteConfirmationModal, { ModalHandle } from '../../components/polls/vote/VoteConfirmationModal';
 
 const PollVotePage: React.FC = () => {
   const router = useRouter();
@@ -44,16 +45,17 @@ const PollVotePage: React.FC = () => {
   const { address } = router.query;
   const [selectedChoiceId, setSelectedChoiceId] = useState<number | undefined>(undefined);
   const [poll, pollDataStatus, refresh] = usePollData(address as string);
+  const voteConfirmationModalRef = useRef<ModalHandle>(null);
   const canCallbackBeCalled = !poll?.isCallbackCalled && poll?.quorumReached && poll?.isFinished;
 
-  const vote = useCallback(async () => {
+  const vote = async (votingPower: number) => {
     if (selectedChoiceId === undefined) {
       toast.error('First choose an option!');
       return;
     }
     const poll = createContract<VotrPoll>(ethereum, VotrPollContract.abi, address as string);
     try {
-      const tx = await poll.vote([selectedChoiceId], [1]);
+      const tx = await poll.vote([selectedChoiceId], [votingPower]);
       const receiptPromise = tx.wait();
       generateTransactionToast(receiptPromise, tx.hash);
       await receiptPromise;
@@ -62,16 +64,24 @@ const PollVotePage: React.FC = () => {
       toast.error(err.data?.message ?? err.message);
       return;
     }
-  }, [address, ethereum, refresh, selectedChoiceId]);
+  };
 
-  const executeCallback = useCallback(async () => {
+  const openVoteConfirmationModal = () => {
+    if (selectedChoiceId === undefined) {
+      toast.error('Select an option first');
+      return;
+    }
+    voteConfirmationModalRef.current?.toggleModal();
+  };
+
+  const executeCallback = async () => {
     const poll = createContract<VotrPoll>(ethereum, VotrPollContract.abi, address as string);
     const tx = await poll.callback();
     const receiptPromise = tx.wait();
     generateTransactionToast(receiptPromise, tx.hash);
     await receiptPromise;
     refresh();
-  }, [address, ethereum, refresh]);
+  };
 
   return (
     <>
@@ -98,7 +108,14 @@ const PollVotePage: React.FC = () => {
                       {choice.value}
                     </SelectableListElement>
                   ))}
-                  <FramedSectionButton onClick={vote}>VOTE</FramedSectionButton>
+                  <FramedSectionButton onClick={openVoteConfirmationModal}>VOTE</FramedSectionButton>
+                  <VoteConfirmationModal
+                    ref={voteConfirmationModalRef}
+                    vote={vote}
+                    symbol={poll?.underlyingToken?.symbol ?? ''}
+                    balance={poll?.underlyingToken?.balance ?? ''}
+                    selectedChoice={poll?.choices[selectedChoiceId!]?.value}
+                  />
                 </SeparatedList>
               </FramedSection>
             </Box>
@@ -153,11 +170,9 @@ const PollVotePage: React.FC = () => {
                   <PropertiesElement>
                     Quorum
                     <BorderLessSelect disabled={true} value={poll?.quorum} margin="0 2px 0 auto">
-                      {[poll?.quorum].map((id) => (
-                        <option key={id} value={id}>
-                          {id}
-                        </option>
-                      ))}
+                      <option key={poll?.quorum} value={poll?.quorum}>
+                        {poll?.quorum}
+                      </option>
                     </BorderLessSelect>
                   </PropertiesElement>
                   <PropertiesElement>

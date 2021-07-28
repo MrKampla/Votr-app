@@ -27,29 +27,36 @@ interface Choice {
   votePercantage: number;
 }
 
+type ERC20TokenWithBalance = ERC20Token & { balance: string };
+
 type PollDetails = Omit<CreatePollStore, 'voters' | 'choices'> & {
   votes: Vote[];
   choices: Choice[];
   isCallbackCalled: boolean;
   quorumReached: boolean;
   isFinished: boolean;
+  underlyingToken?: ERC20TokenWithBalance;
 };
 
 export const usePollData = (pollAddress: string): [PollDetails | undefined, RequestStatus, () => Promise<void>] => {
-  const { ethereum } = useContext(WalletContext);
+  const { ethereum, account } = useContext(WalletContext);
   const { networkId, pollFactory } = useContext(VotrContractsContext);
   const [status, setStatus] = useState<RequestStatus>('idle');
   const [poll, setPoll] = useState<PollDetails | undefined>(undefined);
 
   const refresh = useCallback(async () => {
+    if (!poll) {
+      return;
+    }
     const pollContract = createContract<VotrPoll>(ethereum, VotrPollContract.abi, pollAddress);
     const votesInParticularPollFilter = pollFactory!.filters.Voted(pollAddress);
     setStatus('loading');
     try {
-      const [choices, voteEvents, isCallbackCalled, { finished, quorumReached }] = await Promise.all([
+      const [choices, voteEvents, isCallbackCalled, balance, { finished, quorumReached }] = await Promise.all([
         getAllChoices(pollContract),
         pollFactory!.queryFilter(votesInParticularPollFilter),
         pollContract.isCallbackCalled(),
+        pollContract.balanceOf(account),
         pollContract.isFinished(),
       ]);
       setPoll({
@@ -59,6 +66,10 @@ export const usePollData = (pollAddress: string): [PollDetails | undefined, Requ
         quorumReached,
         votes: mapVoteEventToVotes(voteEvents),
         isCallbackCalled,
+        underlyingToken: {
+          ...poll.underlyingToken!,
+          balance: balance.toString(),
+        },
       });
     } catch (err) {
       toast.error(err.data.message);
@@ -66,18 +77,17 @@ export const usePollData = (pollAddress: string): [PollDetails | undefined, Requ
       return;
     }
     setStatus('success');
-  }, [ethereum, poll, pollAddress, pollFactory]);
+  }, [account, ethereum, poll, pollAddress, pollFactory]);
 
   const getTokenData = useCallback(
-    async (underlyingTokenAddress: string): Promise<ERC20Token> => {
-      const tokenAddress =
-        underlyingTokenAddress === ethers.constants.AddressZero ? pollAddress : underlyingTokenAddress;
-      const underlyingTokenContract = createContract<ERC20>(ethereum, ERC20Contract.abi, tokenAddress);
+    async (underlyingTokenAddress: string): Promise<ERC20TokenWithBalance> => {
+      const underlyingTokenContract = createContract<ERC20>(ethereum, ERC20Contract.abi, pollAddress);
       try {
         const token = {
           address: underlyingTokenAddress,
           name: await underlyingTokenContract.name(),
           symbol: await underlyingTokenContract.symbol(),
+          balance: (await underlyingTokenContract.balanceOf(account)).toString(),
         };
         return token;
       } catch {
@@ -85,10 +95,11 @@ export const usePollData = (pollAddress: string): [PollDetails | undefined, Requ
           address: underlyingTokenAddress,
           name: 'unknown vToken',
           symbol: 'UVTK',
+          balance: (await underlyingTokenContract.balanceOf(account)).toString(),
         };
       }
     },
-    [ethereum, pollAddress]
+    [account, ethereum, pollAddress]
   );
 
   useEffect(() => {

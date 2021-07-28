@@ -8,20 +8,23 @@ import Image from 'next/image';
 import { ButtonBase } from '../homepage';
 import { darken } from 'polished';
 
-export const StyledModal = Modal.styled`
+const StyledModalBase = Modal.styled`
   opacity: ${(props: { opacity: number }) => props.opacity};
   background-color: ${(props: any) => props.theme.primary};
   width: 80vw;
   max-width: 420px;
   min-width: 280px;
-  max-height: 80vh;
-  min-height: 70vh;
   border-radius: 24px;
   border: 1px solid ${(props: any) => props.theme.border};
   transition: opacity 0.3s ease-in-out;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+`;
+
+export const StyledModal = styled(StyledModalBase)<{ fitContent?: boolean }>`
+  max-height: ${(props) => (props.fitContent ? 'fit-content' : '80vh')};
+  min-height: ${(props) => (props.fitContent ? 'fit-content' : '70vh')};
 `;
 
 export const FadingBackground = styled(BaseModalBackground)`
@@ -81,7 +84,7 @@ export const ElementsList = styled.div`
   color: ${(props) => props.theme.font};
 `;
 
-export const ElementCard = styled.div<{ isSelected?: boolean }>`
+export const ElementCard = styled.div<{ isSelected?: boolean; nonClickable?: boolean }>`
   border: 1px solid ${({ theme, isSelected }) => (isSelected ? theme.cta : theme.border)};
   border-radius: 8px;
   height: fit-content;
@@ -89,9 +92,10 @@ export const ElementCard = styled.div<{ isSelected?: boolean }>`
   flex-direction: column;
   padding: 16px;
   margin-top: 16px;
-  cursor: pointer;
+  cursor: ${(props) => (props.nonClickable ? 'initial' : 'pointer')};
+  transition: 0.25s;
   &:hover {
-    background-color: ${(props) => props.theme.disabled};
+    background-color: ${(props) => (props.nonClickable ? 'initial' : props.theme.disabled)};
   }
 `;
 
@@ -162,4 +166,18 @@ export const FooterWrapper = styled.div`
   border-top: 2px solid ${(props) => props.theme.border};
   display: flex;
   justify-content: center;
+`;
+
+export const SingleDescriptor = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const ElementValue = styled.div`
+  margin-left: auto;
+  font-weight: bold;
+  padding-left: 8px;
+  text-align: right;
+  word-break: break-all;
 `;
