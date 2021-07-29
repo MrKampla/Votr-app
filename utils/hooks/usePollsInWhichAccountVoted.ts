@@ -30,7 +30,7 @@ export const usePollsInWhichAccountVoted = (): [Poll[], RequestStatus] => {
             });
           })
         );
-        setPolls(pollsData.reverse());
+        setPolls(pollsData.reverse().filter(onlyUniquePollsFilter));
         setStatus('success');
       })
       .catch(() => {
@@ -40,3 +40,6 @@ export const usePollsInWhichAccountVoted = (): [Poll[], RequestStatus] => {
   }, [pollFactory, account, ethereum, networkId]);
   return [polls, status];
 };
+
+const onlyUniquePollsFilter = (poll: Poll, index: number, arr: Poll[]) =>
+  index === arr.findIndex((t) => t.address === poll.address);

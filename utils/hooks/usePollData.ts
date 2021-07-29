@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import merge from 'lodash/merge';
 import { WalletContext } from '../../components/providers/WalletConnector';
 import { RequestStatus } from '../../constants/requestStatus';
