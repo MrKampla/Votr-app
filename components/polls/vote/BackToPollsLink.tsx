@@ -3,9 +3,10 @@ import { BsArrowLeft } from 'react-icons/bs';
 import styled from 'styled-components';
 import Link from 'next/link';
 import Routes from '../../../constants/RoutesEnum';
+import { darken, lighten } from 'polished';
 
 const LinkWrapper = styled.div`
-  color: ${(props) => props.theme.border};
+  color: ${(props) => (props.theme.mode === 'light' ? lighten(0.3, props.theme.font) : darken(0.3, props.theme.font))};
   display: flex;
   cursor: pointer;
   width: fit-content;

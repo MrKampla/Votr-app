@@ -2,7 +2,7 @@ import React from 'react';
 import { FramedContent, FramedSectionContentWrapper, FramedTitle } from '../styled/create/Create';
 
 interface FramedSectionProps {
-  title: string;
+  title: JSX.Element | React.ReactNode;
   minWidth?: string;
 }
 

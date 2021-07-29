@@ -21,7 +21,7 @@ export interface ModalHandle {
 }
 
 interface VoteConfirmationModal {
-  vote: (votingPower: number) => Promise<void>;
+  vote: (votingPower: string) => Promise<void>;
   symbol: string;
   balance: string;
   selectedChoice?: string;
@@ -31,7 +31,7 @@ interface VoteConfirmationModal {
 const VoteConfirmationModal = forwardRef<ModalHandle, VoteConfirmationModal>(
   ({ vote, symbol, balance, selectedChoice }, ref) => {
     const { isOpen: isVotingPowerModalOpen, toggleModal, afterOpen, beforeClose, opacity } = useStyledModal();
-    const [votingPower, setVotingPower] = useState(1);
+    const [votingPower, setVotingPower] = useState('1');
 
     useImperativeHandle(ref, () => ({ toggleModal }));
     return (
@@ -71,7 +71,7 @@ const VoteConfirmationModal = forwardRef<ModalHandle, VoteConfirmationModal>(
                         if (isNaN(+e.target.value)) {
                           return;
                         }
-                        setVotingPower(+e.target.value);
+                        setVotingPower(e.target.value);
                       }}
                     />
                   </ElementValue>

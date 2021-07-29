@@ -38,6 +38,7 @@ import VotingResult from '../../components/polls/vote/VotingResult';
 import AddressLink from '../../components/polls/vote/AddressLink';
 import BackToPollsLink from '../../components/polls/vote/BackToPollsLink';
 import VoteConfirmationModal, { ModalHandle } from '../../components/polls/vote/VoteConfirmationModal';
+import { ChipWrapper } from '../../components/styled/polls/Polls';
 
 const PollVotePage: React.FC = () => {
   const router = useRouter();
@@ -48,14 +49,10 @@ const PollVotePage: React.FC = () => {
   const voteConfirmationModalRef = useRef<ModalHandle>(null);
   const canCallbackBeCalled = !poll?.isCallbackCalled && poll?.quorumReached && poll?.isFinished;
 
-  const vote = async (votingPower: number) => {
-    if (selectedChoiceId === undefined) {
-      toast.error('First choose an option!');
-      return;
-    }
+  const vote = async (votingPower: string) => {
     const poll = createContract<VotrPoll>(ethereum, VotrPollContract.abi, address as string);
     try {
-      const tx = await poll.vote([selectedChoiceId], [votingPower]);
+      const tx = await poll.vote([selectedChoiceId!], [votingPower]);
       const receiptPromise = tx.wait();
       generateTransactionToast(receiptPromise, tx.hash);
       await receiptPromise;
@@ -108,7 +105,9 @@ const PollVotePage: React.FC = () => {
                       {choice.value}
                     </SelectableListElement>
                   ))}
-                  <FramedSectionButton onClick={openVoteConfirmationModal}>VOTE</FramedSectionButton>
+                  {!poll?.isFinished && (
+                    <FramedSectionButton onClick={openVoteConfirmationModal}>VOTE</FramedSectionButton>
+                  )}
                   <VoteConfirmationModal
                     ref={voteConfirmationModalRef}
                     vote={vote}
@@ -139,7 +138,17 @@ const PollVotePage: React.FC = () => {
           </BoxColumn>
           <WrappableBoxColumn width="480px">
             <Box padding="32px 32px 0 0" paddingMobile="16px 0">
-              <FramedSection title={'Properties'} minWidth="100%">
+              <FramedSection
+                title={
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    Properties
+                    <ChipWrapper value={poll?.isFinished ? 'Ended' : 'Active'}>
+                      {poll?.isFinished ? 'Ended' : 'Active'}
+                    </ChipWrapper>
+                  </div>
+                }
+                minWidth="100%"
+              >
                 <SeparatedList>
                   <PropertiesElement break>
                     Poll type
