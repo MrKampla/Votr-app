@@ -56,7 +56,6 @@ export const OpenModalIcon = styled(GiHamburgerMenu)`
 
 export const ExternalLinkIcon = styled(BiLinkExternal)`
   cursor: pointer;
-  margin-left: auto;
 `;
 
 export const CloseModalIcon = styled(IoClose)`
@@ -190,6 +189,8 @@ export const ElementValue = styled.div`
 
 export const ExternalLink = styled.a`
   text-decoration: none;
+  display: flex;
+  flex-direction: row;
   color: ${(props) => props.theme.font};
   align-items: center;
   margin-left: auto;

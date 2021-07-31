@@ -42,6 +42,7 @@ import { ChipWrapper } from '../../components/styled/polls/Polls';
 import { LoadingFallback } from '../../components/homepage/LoadingIndicator';
 import { generateAddressLink } from '../../utils/generateLinkToEtherscan';
 import { VotrContractsContext } from '../../components/providers/ContractInitializer';
+import LinkToForge from '../../components/polls/vote/LinkToForge';
 
 const PollVotePage: React.FC = () => {
   const router = useRouter();
@@ -164,14 +165,23 @@ const PollVotePage: React.FC = () => {
                       <PollTypeModal isReadOnly={true} selectedValue={poll?.pollType} />
                     </PropertiesElement>
                     {poll?.underlyingToken?.address === ethers.constants.AddressZero ? null : (
-                      <PropertiesElement break>
-                        Token
-                        <UnderlyingTokenModal
-                          isReadOnly={true}
-                          externalLink={generateAddressLink(poll?.underlyingToken?.address!, networkId!)}
-                          selectedValue={poll?.underlyingToken}
-                        />
-                      </PropertiesElement>
+                      <>
+                        <PropertiesElement break>
+                          Token
+                          <UnderlyingTokenModal
+                            isReadOnly={true}
+                            externalLink={generateAddressLink(poll?.underlyingToken?.address!, networkId!)}
+                            selectedValue={poll?.underlyingToken}
+                          />
+                        </PropertiesElement>
+                        <PropertiesElement>
+                          Forge
+                          <LinkToForge
+                            pollAddress={address as string}
+                            underlyingTokenAddress={poll?.underlyingToken?.address!}
+                          />
+                        </PropertiesElement>
+                      </>
                     )}
                     {poll?.callbackAddress === ethers.constants.AddressZero ? null : (
                       <PropertiesElement break>
