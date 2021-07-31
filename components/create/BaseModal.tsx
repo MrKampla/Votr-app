@@ -1,7 +1,12 @@
-import React from 'react';
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import useStyledModal from '../../utils/hooks/useStyledModal';
-import { ModalOpenerWrapper, OpenModalIcon, StyledModal } from '../styled/create/VotrModalStyled';
+import {
+  ExternalLinkIcon,
+  ModalOpenerWrapper,
+  OpenModalIcon,
+  StyledModal,
+  ExternalLink,
+} from '../styled/create/VotrModalStyled';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -9,17 +14,36 @@ interface BaseModalProps {
   selectedValue?: React.ReactNode;
   margin?: string;
   isReadOnly?: boolean;
+  externalLink?: string;
 }
 
-export type ModalProps<T> = { selectedValue?: T; isReadOnly?: boolean; onChange?: (pollType: T) => void };
+export type ModalProps<T> = {
+  selectedValue?: T;
+  isReadOnly?: boolean;
+  onChange?: (pollType: T) => void;
+  externalLink?: string;
+};
 
-const BaseModal: React.FC<BaseModalProps> = ({ children, isOpen, setIsOpen, selectedValue, margin, isReadOnly }) => {
+const BaseModal: React.FC<BaseModalProps> = ({
+  children,
+  isOpen,
+  setIsOpen,
+  selectedValue,
+  margin,
+  isReadOnly,
+  externalLink,
+}) => {
   const { opacity, afterOpen, beforeClose, toggleModal } = useStyledModal({ isOpen, setIsOpen });
 
   return (
     <ModalOpenerWrapper margin={margin}>
       {selectedValue}
       {!isReadOnly && <OpenModalIcon onClick={toggleModal} />}
+      {externalLink && (
+        <ExternalLink href={externalLink} target="_blank" rel="noreferrer">
+          <ExternalLinkIcon />
+        </ExternalLink>
+      )}
       <StyledModal
         isOpen={isOpen}
         onBackgroundClick={toggleModal}

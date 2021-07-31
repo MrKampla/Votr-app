@@ -169,9 +169,9 @@ export const BorderLessDatePicker = styled.input<{ margin?: string }>`
   }
 `;
 
-export const ThemedCheckbox = styled.input<{ margin?: string }>`
+export const ThemedCheckbox = styled.input<{ margin?: string; disabled?: boolean }>`
   outline: none;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'initial' : 'pointer')};
   margin: ${(props) => props.margin};
 `;
 

@@ -1,3 +1,4 @@
+import VotrPollFactoryJson from '../contracts/VotrPollFactory.json';
 import FirstPastThePostPollTypeJson from '../contracts/FirstPastThePostPollType.json';
 import CumulativePollTypeJson from '../contracts/CumulativePollType.json';
 import EvaluativePollTypeJson from '../contracts/EvaluativePollType.json';
@@ -9,7 +10,7 @@ export interface PollType {
   description: string;
 }
 
-type NetworkId = keyof typeof FirstPastThePostPollTypeJson.networks;
+type NetworkId = keyof typeof VotrPollFactoryJson.networks;
 
 export const getPollTypeContractsForNetwork = (networkId: string): PollType[] => {
   return [

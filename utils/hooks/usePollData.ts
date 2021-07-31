@@ -50,7 +50,6 @@ export const usePollData = (pollAddress: string): [PollDetails | undefined, Requ
     }
     const pollContract = createContract<VotrPoll>(ethereum, VotrPollContract.abi, pollAddress);
     const votesInParticularPollFilter = pollFactory!.filters.Voted(pollAddress);
-    setStatus('loading');
     try {
       const [choices, voteEvents, isCallbackCalled, balance, { finished, quorumReached }] = await Promise.all([
         getAllChoices(pollContract),
@@ -76,7 +75,6 @@ export const usePollData = (pollAddress: string): [PollDetails | undefined, Requ
       setStatus('error');
       return;
     }
-    setStatus('success');
   }, [account, ethereum, poll, pollAddress, pollFactory]);
 
   const getTokenData = useCallback(

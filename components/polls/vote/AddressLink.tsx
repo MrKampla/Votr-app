@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { generateAddressLinkToEtherscan } from '../../../utils/generateLinkToEtherscan';
+import { generateAddressLink } from '../../../utils/generateLinkToEtherscan';
 import shortenAddress from '../../../utils/shortenAddress';
+import { VotrContractsContext } from '../../providers/ContractInitializer';
 
 const AddressLinkWrapper = styled.a`
   text-decoration: none;
@@ -14,12 +15,10 @@ const AddressLinkWrapper = styled.a`
 `;
 
 const AddressLink = ({ address }: { address: string }) => {
-  const [generatedLink, setGeneratedLink] = useState('...');
-  useEffect(() => {
-    generateAddressLinkToEtherscan(address).then((link) => setGeneratedLink(link));
-  });
+  const { networkId } = useContext(VotrContractsContext);
+
   return (
-    <AddressLinkWrapper href={generatedLink !== '...' ? generatedLink : undefined} target="_blank" rel="noreferrer">
+    <AddressLinkWrapper href={generateAddressLink(address, networkId!)} target="_blank" rel="noreferrer">
       {shortenAddress(address)}
     </AddressLinkWrapper>
   );

@@ -33,7 +33,7 @@ import { VotingPowerInput } from '../components/styled/create/Create';
 
 export default function Create() {
   const [state, dispatch] = useReducer(createPollReducer, initialStateValue);
-  const { pollFactory } = useContext(VotrContractsContext);
+  const { pollFactory, networkId } = useContext(VotrContractsContext);
   const { account } = useContext(WalletContext);
   const pollTypes = usePollTypesContracts();
   return (
@@ -177,7 +177,9 @@ export default function Create() {
                     />
                   </PropertiesElement>
                 </SeparatedList>
-                <FramedSectionButton onClick={() => createNewPoll(state, { account, pollTypes, pollFactory })}>
+                <FramedSectionButton
+                  onClick={() => createNewPoll(state, { account, pollTypes, pollFactory, networkId: networkId! })}
+                >
                   Publish
                 </FramedSectionButton>
               </FramedSection>
@@ -227,7 +229,12 @@ const validatePollCreationParams = (state: CreatePollStore, pollFactory: VotrPol
 
 const createNewPoll = async (
   state: CreatePollStore,
-  { account, pollTypes, pollFactory }: { account: string; pollTypes: PollType[]; pollFactory?: VotrPollFactory }
+  {
+    account,
+    pollTypes,
+    pollFactory,
+    networkId,
+  }: { account: string; pollTypes: PollType[]; pollFactory?: VotrPollFactory; networkId: number }
 ) => {
   if (!account || !pollFactory) {
     toast.error('Cannot create a poll without connecting to a network and choosing an account');
@@ -257,6 +264,6 @@ const createNewPoll = async (
       }))
     );
     const receiptPromise = tx.wait();
-    generateTransactionToast(receiptPromise, tx.hash);
+    generateTransactionToast(receiptPromise, tx.hash, networkId);
   }
 };

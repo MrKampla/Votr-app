@@ -39,10 +39,14 @@ import AddressLink from '../../components/polls/vote/AddressLink';
 import BackToPollsLink from '../../components/polls/vote/BackToPollsLink';
 import VoteConfirmationModal, { ModalHandle } from '../../components/polls/vote/VoteConfirmationModal';
 import { ChipWrapper } from '../../components/styled/polls/Polls';
+import { LoadingFallback } from '../../components/homepage/LoadingIndicator';
+import { generateAddressLink } from '../../utils/generateLinkToEtherscan';
+import { VotrContractsContext } from '../../components/providers/ContractInitializer';
 
 const PollVotePage: React.FC = () => {
   const router = useRouter();
   const { ethereum } = useContext(WalletContext);
+  const { networkId } = useContext(VotrContractsContext);
   const { address } = router.query;
   const [selectedChoiceId, setSelectedChoiceId] = useState<number | undefined>(undefined);
   const [poll, pollDataStatus, refresh] = usePollData(address as string);
@@ -54,7 +58,7 @@ const PollVotePage: React.FC = () => {
     try {
       const tx = await poll.vote([selectedChoiceId!], [votingPower]);
       const receiptPromise = tx.wait();
-      generateTransactionToast(receiptPromise, tx.hash);
+      generateTransactionToast(receiptPromise, tx.hash, networkId!);
       await receiptPromise;
       refresh();
     } catch (err) {
@@ -75,7 +79,7 @@ const PollVotePage: React.FC = () => {
     const poll = createContract<VotrPoll>(ethereum, VotrPollContract.abi, address as string);
     const tx = await poll.callback();
     const receiptPromise = tx.wait();
-    generateTransactionToast(receiptPromise, tx.hash);
+    generateTransactionToast(receiptPromise, tx.hash, networkId!);
     await receiptPromise;
     refresh();
   };
@@ -89,33 +93,37 @@ const PollVotePage: React.FC = () => {
             <Box paddingMobile="8px">
               <InputsWrapper>
                 <BackToPollsLink />
-                <BorderLessInput value={poll?.title} translate="" disabled />
-                <BorderLessDescription value={poll?.description} translate="" disabled />
+                <LoadingFallback isLoading={pollDataStatus === 'loading'}>
+                  <BorderLessInput value={poll?.title} translate="" disabled />
+                  <BorderLessDescription value={poll?.description} translate="" disabled />
+                </LoadingFallback>
               </InputsWrapper>
             </Box>
             <Box padding="16px 32px" paddingMobile="16px 0">
               <FramedSection title={'Choices'} minWidth="100%">
-                <SeparatedList>
-                  {poll?.choices.map((choice) => (
-                    <SelectableListElement
-                      key={choice.id}
-                      isSelected={choice.id === selectedChoiceId}
-                      onClick={() => setSelectedChoiceId(choice.id)}
-                    >
-                      {choice.value}
-                    </SelectableListElement>
-                  ))}
-                  {!poll?.isFinished && (
-                    <FramedSectionButton onClick={openVoteConfirmationModal}>VOTE</FramedSectionButton>
-                  )}
-                  <VoteConfirmationModal
-                    ref={voteConfirmationModalRef}
-                    vote={vote}
-                    symbol={poll?.underlyingToken?.symbol ?? ''}
-                    balance={poll?.underlyingToken?.balance ?? ''}
-                    selectedChoice={poll?.choices[selectedChoiceId!]?.value}
-                  />
-                </SeparatedList>
+                <LoadingFallback isLoading={pollDataStatus === 'loading'}>
+                  <SeparatedList>
+                    {poll?.choices.map((choice) => (
+                      <SelectableListElement
+                        key={choice.id}
+                        isSelected={choice.id === selectedChoiceId}
+                        onClick={() => setSelectedChoiceId(choice.id)}
+                      >
+                        {choice.value}
+                      </SelectableListElement>
+                    ))}
+                    {!poll?.isFinished && (
+                      <FramedSectionButton onClick={openVoteConfirmationModal}>VOTE</FramedSectionButton>
+                    )}
+                    <VoteConfirmationModal
+                      ref={voteConfirmationModalRef}
+                      vote={vote}
+                      symbol={poll?.underlyingToken?.symbol ?? ''}
+                      balance={poll?.underlyingToken?.balance ?? ''}
+                      selectedChoice={poll?.choices[selectedChoiceId!]?.value}
+                    />
+                  </SeparatedList>
+                </LoadingFallback>
               </FramedSection>
             </Box>
             {poll?.votes?.length !== undefined && poll.votes.length > 0 ? (
@@ -137,95 +145,109 @@ const PollVotePage: React.FC = () => {
             ) : null}
           </BoxColumn>
           <WrappableBoxColumn width="480px">
-            <Box padding="32px 32px 0 0" paddingMobile="16px 0">
-              <FramedSection
-                title={
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    Properties
-                    <ChipWrapper value={poll?.isFinished ? 'Ended' : 'Active'}>
-                      {poll?.isFinished ? 'Ended' : 'Active'}
-                    </ChipWrapper>
-                  </div>
-                }
-                minWidth="100%"
-              >
-                <SeparatedList>
-                  <PropertiesElement break>
-                    Poll type
-                    <PollTypeModal isReadOnly={true} selectedValue={poll?.pollType} />
-                  </PropertiesElement>
-                  {poll?.underlyingToken?.address === ethers.constants.AddressZero ? null : (
+            <LoadingFallback isLoading={pollDataStatus === 'loading'}>
+              <Box padding="32px 32px 0 0" paddingMobile="16px 0">
+                <FramedSection
+                  title={
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      Properties
+                      <ChipWrapper value={poll?.isFinished ? 'Ended' : 'Active'}>
+                        {poll?.isFinished ? 'Ended' : 'Active'}
+                      </ChipWrapper>
+                    </div>
+                  }
+                  minWidth="100%"
+                >
+                  <SeparatedList>
                     <PropertiesElement break>
-                      Token
-                      <UnderlyingTokenModal isReadOnly={true} selectedValue={poll?.underlyingToken} />
+                      Poll type
+                      <PollTypeModal isReadOnly={true} selectedValue={poll?.pollType} />
                     </PropertiesElement>
-                  )}
-                  {poll?.callbackAddress === ethers.constants.AddressZero ? null : (
+                    {poll?.underlyingToken?.address === ethers.constants.AddressZero ? null : (
+                      <PropertiesElement break>
+                        Token
+                        <UnderlyingTokenModal
+                          isReadOnly={true}
+                          externalLink={generateAddressLink(poll?.underlyingToken?.address!, networkId!)}
+                          selectedValue={poll?.underlyingToken}
+                        />
+                      </PropertiesElement>
+                    )}
+                    {poll?.callbackAddress === ethers.constants.AddressZero ? null : (
+                      <PropertiesElement break>
+                        Callback
+                        <CallbackModal isReadOnly={true} selectedValue={poll?.callbackAddress} />
+                      </PropertiesElement>
+                    )}
                     <PropertiesElement break>
-                      Callback
-                      <CallbackModal isReadOnly={true} selectedValue={poll?.callbackAddress} />
-                    </PropertiesElement>
-                  )}
-                  <PropertiesElement break>
-                    End date
-                    <BorderLessDatePicker
-                      disabled={true}
-                      value={poll?.endDate.substring(0, 16)}
-                      onChange={() => {}}
-                      type="datetime-local"
-                      margin="0 0 0 auto"
-                    />
-                  </PropertiesElement>
-                  <PropertiesElement>
-                    Quorum
-                    <BorderLessSelect disabled={true} value={poll?.quorum} margin="0 2px 0 auto">
-                      <option key={poll?.quorum} value={poll?.quorum}>
-                        {poll?.quorum}
-                      </option>
-                    </BorderLessSelect>
-                  </PropertiesElement>
-                  <PropertiesElement>
-                    Allow vote delegation
-                    <ThemedCheckbox
-                      checked={poll?.isVoteDelegationAllowed}
-                      onChange={() => {}}
-                      type="checkbox"
-                      margin="0 4px 0 auto"
-                    />
-                  </PropertiesElement>
-                </SeparatedList>
-              </FramedSection>
-            </Box>
-            <Box padding="32px 32px 0 0" paddingMobile="16px 0">
-              <FramedSection title={'Results'} minWidth="100%">
-                <SeparatedList>
-                  {poll?.choices.map((choice, id) => (
-                    <PropertiesElement key={id} break>
-                      <VotingResult
-                        name={choice.value}
-                        amount={choice.amount}
-                        symbol={poll.underlyingToken!.symbol}
-                        percent={choice.votePercantage}
+                      End date
+                      <BorderLessDatePicker
+                        disabled={true}
+                        value={poll?.endDate.substring(0, 16)}
+                        onChange={() => {}}
+                        type="datetime-local"
+                        margin="0 0 0 auto"
                       />
                     </PropertiesElement>
-                  ))}
-                </SeparatedList>
-              </FramedSection>
-            </Box>
-            {poll?.callbackAddress === ethers.constants.AddressZero ? undefined : (
+                    <PropertiesElement>
+                      Quorum
+                      <BorderLessSelect disabled={true} value={poll?.quorum} margin="0 2px 0 auto">
+                        <option key={poll?.quorum} value={poll?.quorum}>
+                          {poll?.quorum}
+                        </option>
+                      </BorderLessSelect>
+                    </PropertiesElement>
+                    <PropertiesElement>
+                      Allow vote delegation
+                      <ThemedCheckbox
+                        disabled
+                        checked={poll?.isVoteDelegationAllowed}
+                        onChange={() => {}}
+                        type="checkbox"
+                        margin="0 4px 0 auto"
+                      />
+                    </PropertiesElement>
+                  </SeparatedList>
+                </FramedSection>
+              </Box>
+            </LoadingFallback>
+            <LoadingFallback isLoading={pollDataStatus === 'loading'}>
+              <Box padding="32px 32px 0 0" paddingMobile="16px 0">
+                <FramedSection title={'Results'} minWidth="100%">
+                  {poll?.isFinished ? (
+                    poll?.quorumReached ? (
+                      <>Quorum has been reached</>
+                    ) : (
+                      <>Quorum has not been reached</>
+                    )
+                  ) : null}
+                  <SeparatedList>
+                    {poll?.choices.map((choice, id) => (
+                      <PropertiesElement key={id} break>
+                        <VotingResult
+                          name={choice.value}
+                          amount={choice.amount}
+                          symbol={poll.underlyingToken!.symbol}
+                          percent={choice.votePercantage}
+                        />
+                      </PropertiesElement>
+                    ))}
+                  </SeparatedList>
+                </FramedSection>
+              </Box>
+            </LoadingFallback>
+            {poll?.callbackAddress === ethers.constants.AddressZero || !poll ? undefined : (
               <Box padding="32px 32px 0 0" paddingMobile="16px 0">
                 <FramedSection title={'Callback'} minWidth="100%">
-                  {poll?.isCallbackCalled && (
-                    <CallbackBlockerWrapper>
-                      Callback has already been executed <AddressLink address={poll.callbackAddress} />
-                    </CallbackBlockerWrapper>
-                  )}
-                  {poll?.quorumReached !== undefined && !poll.quorumReached && (
-                    <CallbackBlockerWrapper>Quorum not reached</CallbackBlockerWrapper>
-                  )}
-                  {poll?.isFinished !== undefined && !poll.isFinished && (
-                    <CallbackBlockerWrapper>Poll has not yet ended</CallbackBlockerWrapper>
-                  )}
+                  <CallbackBlockerWrapper>
+                    {poll?.isCallbackCalled && (
+                      <>
+                        Callback has already been executed <AddressLink address={poll.callbackAddress} />
+                      </>
+                    )}
+                    {poll?.quorumReached !== undefined && !poll.quorumReached && <>Quorum not reached</>}
+                    {poll?.isFinished !== undefined && !poll.isFinished && <>Poll has not yet ended</>}
+                  </CallbackBlockerWrapper>
                   <ExecuteCallbackWrapper>
                     {canCallbackBeCalled ? (
                       <ActionButton margin="0" onClick={executeCallback}>

@@ -1,17 +1,17 @@
-import { ethers } from 'ethers';
+import { NETWORK_NAMES } from '../constants/networkNames';
 
-const generateLinkToEtherscan = async (data: string, type: string) => {
-  const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-  const network = await provider.getNetwork();
+const generateLinkToBlockchainExplorer = (data: string, type: string, networkId: number) => {
   const protocol = 'https://';
   const baseUrl = `etherscan.io/${type}/${data}`;
-  if (network.name === 'homestead' || network.name === 'unknown') {
+  const networkName = NETWORK_NAMES[networkId as keyof typeof NETWORK_NAMES];
+  if (!networkName || networkName === 'mainnet') {
     return `${protocol}${baseUrl}`;
   }
-  return `${protocol}${network.name}${baseUrl}`;
+  return `${protocol}${networkName}${baseUrl}`;
 };
 
-export const generateTransactionLinkToEtherscan = async (transactionHash: string) =>
-  generateLinkToEtherscan(transactionHash, 'tx');
+export const generateTransactionLink = (transactionHash: string, networkId: number) =>
+  generateLinkToBlockchainExplorer(transactionHash, 'tx', networkId);
 
-export const generateAddressLinkToEtherscan = async (account: string) => generateLinkToEtherscan(account, 'address');
+export const generateAddressLink = (account: string, networkId: number) =>
+  generateLinkToBlockchainExplorer(account, 'address', networkId);

@@ -2,6 +2,7 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoClose } from 'react-icons/io5';
 import { TiTick } from 'react-icons/ti';
 import { CgClose } from 'react-icons/cg';
+import { BiLinkExternal } from 'react-icons/bi';
 import styled from 'styled-components';
 import Modal, { BaseModalBackground } from 'styled-react-modal';
 import Image from 'next/image';
@@ -49,6 +50,11 @@ export const ModalOpenerWrapper = styled.div<{ margin?: string }>`
 `;
 
 export const OpenModalIcon = styled(GiHamburgerMenu)`
+  cursor: pointer;
+  margin-left: auto;
+`;
+
+export const ExternalLinkIcon = styled(BiLinkExternal)`
   cursor: pointer;
   margin-left: auto;
 `;
@@ -180,4 +186,11 @@ export const ElementValue = styled.div`
   padding-left: 8px;
   text-align: right;
   word-break: break-all;
+`;
+
+export const ExternalLink = styled.a`
+  text-decoration: none;
+  color: ${(props) => props.theme.font};
+  align-items: center;
+  margin-left: auto;
 `;

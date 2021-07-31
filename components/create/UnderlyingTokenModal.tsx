@@ -33,7 +33,7 @@ import { DisabledButton } from '../styled/homepage';
 
 export type ERC20Token = Pick<Token, 'name' | 'symbol' | 'address'>;
 
-const UnderlyingTokenModal = ({ onChange, selectedValue, isReadOnly }: ModalProps<ERC20Token>) => {
+const UnderlyingTokenModal = ({ onChange, selectedValue, isReadOnly, externalLink }: ModalProps<ERC20Token>) => {
   const [listOfTokens, isErrorWithFetchingTokenList] = useTokenList();
   const { ethereum } = useContext(WalletContext);
   const { link } = useContext(ThemeContext);
@@ -68,6 +68,7 @@ const UnderlyingTokenModal = ({ onChange, selectedValue, isReadOnly }: ModalProp
       setIsOpen={setIsOpen}
       selectedValue={selectedValue?.name}
       isReadOnly={isReadOnly}
+      externalLink={externalLink}
     >
       <TitleContentWrapper>
         <div>Select underlying token</div>
