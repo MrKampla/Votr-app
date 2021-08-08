@@ -34,7 +34,7 @@ import { DisabledButton } from '../styled/homepage';
 export type ERC20Token = Pick<Token, 'name' | 'symbol' | 'address'>;
 
 const UnderlyingTokenModal = ({ onChange, selectedValue, isReadOnly, externalLink }: ModalProps<ERC20Token>) => {
-  const [listOfTokens, isErrorWithFetchingTokenList] = useTokenList();
+  const [defaultTokenList, isErrorWithFetchingTokenList] = useTokenList();
   const { ethereum } = useContext(WalletContext);
   const { link } = useContext(ThemeContext);
   const [isOpen, setIsOpen] = useState(false);
@@ -60,6 +60,8 @@ const UnderlyingTokenModal = ({ onChange, selectedValue, isReadOnly, externalLin
     }
     fetchToken();
   }, [contractAddress, ethereum]);
+
+  const listOfTokens = customToken ? [customToken] : defaultTokenList;
 
   return (
     <BaseModal
