@@ -28,6 +28,7 @@ import {
   ExecuteCallbackWrapper,
   SelectableListElement,
   CallbackBlockerWrapper,
+  PropertiesWrapper,
 } from '../../components/styled/polls/vote/Vote';
 import { VotrPoll } from '../../contracts/@types';
 import createContract from '../../utils/createContract';
@@ -150,12 +151,12 @@ const PollVotePage: React.FC = () => {
               <Box padding="32px 32px 0 0" paddingMobile="16px 0">
                 <FramedSection
                   title={
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <PropertiesWrapper>
                       Properties
                       <ChipWrapper value={poll?.isFinished ? 'Ended' : 'Active'}>
                         {poll?.isFinished ? 'Ended' : 'Active'}
                       </ChipWrapper>
-                    </div>
+                    </PropertiesWrapper>
                   }
                   minWidth="100%"
                 >

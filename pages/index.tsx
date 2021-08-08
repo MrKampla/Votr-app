@@ -1,6 +1,14 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { Carousel, Slider, SliderContainer, StepIcon, StepIcons, Controls, SliderButton } from '../components/styled/homepage/Carousel';
+import {
+  Carousel,
+  Slider,
+  SliderContainer,
+  StepIcon,
+  StepIcons,
+  Controls,
+  SliderButton,
+} from '../components/styled/homepage/Carousel';
 import { ContentWrapper, FramedContainer } from '../components/styled/homepage';
 import { CARDS } from '../components/homepage/Cards';
 import { usePagination } from '../utils/hooks/usePagination';

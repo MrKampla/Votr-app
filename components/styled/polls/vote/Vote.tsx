@@ -57,3 +57,8 @@ export const CallbackBlockerWrapper = styled.div`
   width: 100%;
   text-align: center;
 `;
+
+export const PropertiesWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
