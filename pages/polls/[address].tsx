@@ -79,11 +79,16 @@ const PollVotePage: React.FC = () => {
 
   const executeCallback = async () => {
     const poll = createContract<VotrPoll>(ethereum, VotrPollContract.abi, address as string);
-    const tx = await poll.callback();
-    const receiptPromise = tx.wait();
-    generateTransactionToast(receiptPromise, tx.hash, networkId!);
-    await receiptPromise;
-    refresh();
+    try {
+      const tx = await poll.callback();
+      const receiptPromise = tx.wait();
+      generateTransactionToast(receiptPromise, tx.hash, networkId!);
+      await receiptPromise;
+      refresh();
+    } catch (err) {
+      toast.error(err.data?.message ?? err.message);
+      return;
+    }
   };
 
   return (
