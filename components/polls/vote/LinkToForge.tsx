@@ -20,7 +20,7 @@ const LinkToForge = ({
   pollAddress: string;
 }) => {
   return (
-    <Link href={`${Routes.Forge}?token=${underlyingTokenAddress}?poll=${pollAddress}`} passHref>
+    <Link href={`${Routes.Forge}?token=${underlyingTokenAddress}&poll=${pollAddress}`} passHref>
       <ExternalLink>
         <ForgeLinkWrapper>{shortenAddress(underlyingTokenAddress)}</ForgeLinkWrapper>
         <ExternalLinkIcon />

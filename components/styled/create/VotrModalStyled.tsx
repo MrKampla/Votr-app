@@ -180,6 +180,7 @@ export const SingleDescriptor = styled.div`
 `;
 
 export const ElementValue = styled.div`
+  color: ${(props) => props.theme.font};
   margin-left: auto;
   font-weight: bold;
   padding-left: 8px;

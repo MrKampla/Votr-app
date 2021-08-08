@@ -177,9 +177,11 @@ export const ThemedCheckbox = styled.input<{ margin?: string; disabled?: boolean
 
 const InputBase = css`
   -webkit-appearance: none;
+  outline: none;
   background-color: ${(props) => props.theme.disabled};
   color: ${(props) => props.theme.font};
   border: 1px solid ${(props) => props.theme.border};
+  transition: 0.25s;
 `;
 
 export const VotingPowerInput = styled.input`

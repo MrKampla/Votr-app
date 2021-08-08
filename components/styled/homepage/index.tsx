@@ -20,6 +20,9 @@ export const ContentWrapper = styled.div`
   grid-template-columns: 1fr min(1024px, 100%) 1fr;
   margin-top: 32px;
   padding: 8px;
+  @media (max-width: ${(props) => props.theme.breakpoints.mobile}px) {
+    margin-top: 8px;
+  }
 `;
 
 export const Title = styled.div`
