@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typechain": "typechain --target=ethers-v5 --out-dir contracts/@types './contracts/*.json'"
+    "typechain": "rm -rf contracts/types && typechain --target=ethers-v5 --out-dir contracts/@types './contracts/*.json'"
   },
   "dependencies": {
     "axios": "^0.21.1",
