@@ -1,5 +1,7 @@
 import { useContext, useReducer } from 'react';
+import Head from 'next/head';
 import { ethers } from 'ethers';
+import toast from 'react-hot-toast';
 import Navigation from '../components/polls/Navigation';
 import { ContentWrapper, Box } from '../components/styled/homepage';
 import {
@@ -19,7 +21,6 @@ import { FramedSectionButton, PropertiesElement, CloseIcon } from '../components
 import FramedSection from '../components/create/FramedSection';
 import { VotrContractsContext } from '../components/providers/ContractInitializer';
 import { WalletContext } from '../components/providers/WalletConnector';
-import toast from 'react-hot-toast';
 import { createPollReducer, initialStateValue, CreatePollStore } from '../components/create/createPollReducer';
 import EditableListElement from '../components/create/EditableListElement';
 import { usePollTypesContracts } from '../utils/hooks/usePollTypesContracts';
@@ -38,6 +39,9 @@ export default function Create() {
   const pollTypes = usePollTypesContracts();
   return (
     <>
+      <Head>
+        <title>Votr - create a new poll</title>
+      </Head>
       <Navigation />
       <ContentWrapper>
         <WrappableUnFramedContainer>

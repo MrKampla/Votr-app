@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import {
   Carousel,
   Slider,
@@ -20,6 +21,9 @@ export default function HomePage() {
 
   return (
     <ContentWrapper>
+      <Head>
+        <title>Votr - decentralised voting platform</title>
+      </Head>
       <FramedContainer>
         <Carousel>
           <SliderContainer>

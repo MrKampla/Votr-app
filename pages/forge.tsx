@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NextPageContext } from 'next';
+import Head from 'next/head';
 import Navigation from '../components/polls/Navigation';
 import { ContentWrapper, UnframedContainer } from '../components/styled/homepage';
 import { Slider as TabsWrapper, SliderContainer as TabsContainer } from '../components/styled/homepage/Carousel';
@@ -35,6 +36,9 @@ function Forge({ token, poll }: { token: string; poll: string }) {
 
   return (
     <>
+      <Head>
+        <title>Votr forge - mint vTokens</title>
+      </Head>
       <Navigation />
       <ContentWrapper>
         <UnframedContainer>

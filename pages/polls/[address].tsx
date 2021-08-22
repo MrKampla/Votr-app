@@ -1,5 +1,6 @@
 import React, { useState, useContext, useRef } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import toast from 'react-hot-toast';
 import { ethers } from 'ethers';
 import CallbackModal from '../../components/create/CallbackModal';
@@ -93,6 +94,9 @@ const PollVotePage: React.FC = () => {
 
   return (
     <>
+      <Head>
+        <title>Votr poll {address}</title>
+      </Head>
       <Navigation />
       <ContentWrapper>
         <WrappableUnFramedContainer>

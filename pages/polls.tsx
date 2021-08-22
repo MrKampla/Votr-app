@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Navigation from '../components/polls/Navigation';
 import PollList from '../components/polls/PollList';
 import { Title } from '../components/styled/polls/Polls';
@@ -12,6 +13,9 @@ export default function Polls() {
   const [pollsInWitchUserVoted, pollsInWitchUserVotedStatus] = usePollsInWhichAccountVoted();
   return (
     <>
+      <Head>
+        <title>Votr polls</title>
+      </Head>
       <Navigation />
       <ContentWrapper>
         <UnframedContainer>
