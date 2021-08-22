@@ -4,6 +4,7 @@ import { WalletContext } from '../../components/providers/WalletConnector';
 import ERC20ContractJson from '../../contracts/ERC20.json';
 import { ERC20 } from '../../contracts/@types';
 import createContract from '../createContract';
+import { RequestStatus } from '../../constants/requestStatus';
 
 interface UseTokenBalanceProps {
   tokenAddress: string;
@@ -12,6 +13,7 @@ interface UseTokenBalanceProps {
 
 function useToken({ tokenAddress, checkAllowanceFor }: UseTokenBalanceProps) {
   const { ethereum, account } = useContext(WalletContext);
+  const [status, setStatus] = useState<RequestStatus>('idle');
   const [symbol, setSymbol] = useState('');
   const [tokenBalance, setTokenBalance] = useState('0');
   const [tokenAllowance, setTokenAllowance] = useState('0');
@@ -47,16 +49,17 @@ function useToken({ tokenAddress, checkAllowanceFor }: UseTokenBalanceProps) {
         }
       }
     }
-    fetchTokenBalance();
-    fetchTokenSymbol();
-    fetchTokenAlowance();
+    setStatus('loading');
+    Promise.all([fetchTokenBalance(), fetchTokenSymbol(), fetchTokenAlowance()])
+      .then(() => setStatus('success'))
+      .catch(() => setStatus('error'));
   }, [account, checkAllowanceFor, ethereum, tokenAddress]);
 
   useEffect(() => {
     refresh();
   }, [account, checkAllowanceFor, ethereum, refresh, tokenAddress]);
 
-  return { tokenBalance, symbol, tokenAllowance, refresh };
+  return { tokenBalance, status, symbol, tokenAllowance, refresh };
 }
 
 export default useToken;

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { SetStateAction, useContext, useState } from 'react';
 import {
   LockerContainer,
   ValueInput,
@@ -23,22 +23,30 @@ import { generateTransactionToast } from '../../utils/generateTransactionToast';
 import { VotrContractsContext } from '../providers/ContractInitializer';
 import toast from 'react-hot-toast';
 import { SECONDS_IN_WEEK, calculateMultiplierForLockupPeriod } from '../../constants/lockingLogic';
+import { Dispatch } from 'react';
+import { LoadingFallback } from '../homepage/LoadingIndicator';
+
+export interface ForgeTab {
+  pollAddress: string;
+  setPollAddress: Dispatch<SetStateAction<string>>;
+  tokenAddress: string;
+  setTokenAddress: Dispatch<SetStateAction<string>>;
+  tokenData: ReturnType<typeof useToken>;
+  refresh: () => void;
+}
 
 function Lock({
-  initialPollAddress,
-  initialTokenAddress,
-}: {
-  initialPollAddress: string;
-  initialTokenAddress: string;
-}) {
-  const [pollAddress, setPollAddress] = useState(initialPollAddress as string);
-  const [tokenAddress, setTokenAddress] = useState(initialTokenAddress as string);
+  pollAddress,
+  setPollAddress,
+  tokenAddress,
+  setTokenAddress,
+  tokenData: { symbol, status, tokenBalance, tokenAllowance },
+  refresh,
+}: ForgeTab) {
   const [amountOfTokensToLock, setAmountOfTokensToLock] = useState('0');
   const [lockingPeriod, setLockingPeriod] = useState(0);
   const { ethereum } = useContext(WalletContext);
   const { networkId } = useContext(VotrContractsContext);
-
-  const { symbol, tokenBalance, tokenAllowance, refresh } = useToken({ tokenAddress, checkAllowanceFor: pollAddress });
 
   const isSufficientAmountApproved = +tokenAllowance >= +amountOfTokensToLock;
 
@@ -71,21 +79,41 @@ function Lock({
     }
   };
 
+  const estimatedAmountOfTokensToReveive = +amountOfTokensToLock * +calculateMultiplierForLockupPeriod(lockingPeriod);
+
   return (
     <CarouselItem>
       <CenteringContainer>
         <LockerContainer>
           <Field>
-            Poll address <ValueInput type="text" value={pollAddress} onChange={(e) => setPollAddress(e.target.value)} />
+            Poll address
+            <ValueInput
+              type="text"
+              autoComplete="no"
+              value={pollAddress}
+              onChange={(e) => setPollAddress(e.target.value)}
+            />
           </Field>
           <Field>
             Token address
-            <ValueInput type="text" value={tokenAddress} onChange={(e) => setTokenAddress(e.target.value)} /> <br />
+            <ValueInput
+              type="text"
+              autoComplete="no"
+              value={tokenAddress}
+              onChange={(e) => setTokenAddress(e.target.value)}
+            />
+            <br />
           </Field>
-          <Field>{symbol && <>Token symbol: {symbol}</>}</Field>
-          <TokenBalanceWrapper>
-            <TokenBalanceLabel>Amount of underlying tokens to lock</TokenBalanceLabel> token balance: {tokenBalance}
-          </TokenBalanceWrapper>
+          <Field>
+            <LoadingFallback height="18px" isLoading={status === 'loading'}>
+              {symbol && <>Token symbol: {symbol}</>}
+            </LoadingFallback>
+          </Field>
+          <LoadingFallback height="18px" margin="0 0 16px" isLoading={status === 'loading'}>
+            <TokenBalanceWrapper>
+              <TokenBalanceLabel>Amount of underlying tokens to lock</TokenBalanceLabel> token balance: {tokenBalance}
+            </TokenBalanceWrapper>
+          </LoadingFallback>
           <Field>
             <Row>
               <ValueInput
@@ -99,12 +127,14 @@ function Lock({
             </Row>
           </Field>
           <Field>
-            <AllowanceDescriptor
-              isSuccess={isSufficientAmountApproved}
-              onClick={() => setAmountOfTokensToLock(tokenAllowance)}
-            >
-              Allowance for poll: {tokenAllowance} {symbol}
-            </AllowanceDescriptor>
+            <LoadingFallback height="18px" isLoading={status === 'loading'}>
+              <AllowanceDescriptor
+                isSuccess={isSufficientAmountApproved}
+                onClick={() => setAmountOfTokensToLock(tokenAllowance)}
+              >
+                Allowance for poll: {tokenAllowance} {symbol}
+              </AllowanceDescriptor>
+            </LoadingFallback>
           </Field>
           {!isSufficientAmountApproved && (
             <Field>
@@ -120,8 +150,7 @@ function Lock({
             </CenteringContainer>
           </Field>
           <BigMultiplier>x{calculateMultiplierForLockupPeriod(lockingPeriod)}</BigMultiplier>
-          Estimated amount of vTokens to receive:{' '}
-          {+amountOfTokensToLock * +calculateMultiplierForLockupPeriod(lockingPeriod)}
+          Estimated amount of vTokens to receive: {estimatedAmountOfTokensToReveive}
           <CenteringContainer>
             {pollAddress && tokenAddress && +amountOfTokensToLock > 0 && isSufficientAmountApproved ? (
               <ActionButton fullWidth onClick={() => lock()}>

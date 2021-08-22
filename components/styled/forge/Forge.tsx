@@ -149,3 +149,34 @@ export const AllowanceDescriptor = styled.div<{ isSuccess: boolean }>`
   cursor: pointer;
   color: ${(props) => (props.isSuccess ? props.theme.success : props.theme.danger)};
 `;
+
+export const FullWidthContainer = styled.div`
+  width: 100%;
+`;
+
+export const WrappableDescriptor = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+`;
+
+export const AmountWrapper = styled.div`
+  margin-left: auto;
+  word-wrap: break-word;
+  max-width: 320px;
+`;
+
+export const DetailsDescriptorWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  overflow-wrap: break-word;
+`;
+
+export const Flex = styled.div`
+  display: flex;
+`;
+
+export const ToRight = styled.div`
+  margin-left: auto;
+`;
