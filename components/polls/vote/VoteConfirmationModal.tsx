@@ -14,7 +14,7 @@ import {
   ElementsList as ElementWrapper,
   TokenDetailsContainer as ElementDetailsContainer,
 } from '../../styled/create/VotrModalStyled';
-import { UtilityButton } from '../../styled/forge/Forge';
+import { Flex, UtilityButton } from '../../styled/forge/Forge';
 import { ActionButton } from '../../styled/homepage';
 
 export interface ModalHandle {
@@ -66,7 +66,7 @@ const VoteConfirmationModal = forwardRef<ModalHandle, VoteConfirmationModal>(
                 <SingleDescriptor>
                   <ElementDescription>Voting power</ElementDescription>
                   <ElementValue>
-                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <Flex>
                       <UtilityButton margin="0" onClick={() => setVotingPower(balance)}>
                         MAX
                       </UtilityButton>
@@ -79,7 +79,7 @@ const VoteConfirmationModal = forwardRef<ModalHandle, VoteConfirmationModal>(
                           setVotingPower(e.target.value);
                         }}
                       />
-                    </div>
+                    </Flex>
                   </ElementValue>
                 </SingleDescriptor>
               </ElementDetailsContainer>
