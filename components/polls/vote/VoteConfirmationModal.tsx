@@ -14,6 +14,7 @@ import {
   ElementsList as ElementWrapper,
   TokenDetailsContainer as ElementDetailsContainer,
 } from '../../styled/create/VotrModalStyled';
+import { UtilityButton } from '../../styled/forge/Forge';
 import { ActionButton } from '../../styled/homepage';
 
 export interface ModalHandle {
@@ -65,15 +66,20 @@ const VoteConfirmationModal = forwardRef<ModalHandle, VoteConfirmationModal>(
                 <SingleDescriptor>
                   <ElementDescription>Voting power</ElementDescription>
                   <ElementValue>
-                    <QuorumInput
-                      value={votingPower}
-                      onChange={(e) => {
-                        if (isNaN(+e.target.value)) {
-                          return;
-                        }
-                        setVotingPower(e.target.value);
-                      }}
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                      <UtilityButton margin="0" onClick={() => setVotingPower(balance)}>
+                        MAX
+                      </UtilityButton>
+                      <QuorumInput
+                        value={votingPower}
+                        onChange={(e) => {
+                          if (isNaN(+e.target.value)) {
+                            return;
+                          }
+                          setVotingPower(e.target.value);
+                        }}
+                      />
+                    </div>
                   </ElementValue>
                 </SingleDescriptor>
               </ElementDetailsContainer>

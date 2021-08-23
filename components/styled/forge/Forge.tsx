@@ -116,6 +116,7 @@ export const BigMultiplier = styled.div`
 
 export const UtilityButton = styled(ButtonBase)`
   padding: 8px 16px;
+  word-break: keep-all;
   &:hover {
     background: ${(props) =>
       props.theme.mode === 'light' ? darken(0.05, props.theme.disabled) : lighten(0.05, props.theme.disabled)};
