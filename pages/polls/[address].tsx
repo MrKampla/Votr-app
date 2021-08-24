@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import toast from 'react-hot-toast';
 import { ethers } from 'ethers';
+import Switch from 'react-switch';
 import CallbackModal from '../../components/create/CallbackModal';
 import FramedSection from '../../components/create/FramedSection';
 import PollTypeModal from '../../components/create/PollTypeModal';
@@ -30,6 +31,9 @@ import {
   SelectableListElement,
   CallbackBlockerWrapper,
   PropertiesWrapper,
+  ChoicesTitleWrapper,
+  MultivoteWrapper,
+  ChoiceNameWrapper,
 } from '../../components/styled/polls/vote/Vote';
 import { VotrPoll } from '../../contracts/@types';
 import createContract from '../../utils/createContract';
@@ -52,14 +56,18 @@ const PollVotePage: React.FC = () => {
   const { networkId } = useContext(VotrContractsContext);
   const { address } = router.query;
   const [selectedChoiceId, setSelectedChoiceId] = useState<number | undefined>(undefined);
+  const [isMultivote, setIsMultivote] = useState(false);
+  const [votesForChoices, setVotesForChoices] = useState<Map<number, boolean>>(new Map());
   const [poll, pollDataStatus, refresh] = usePollData(address as string);
   const voteConfirmationModalRef = useRef<ModalHandle>(null);
   const canCallbackBeCalled = !poll?.isCallbackCalled && poll?.quorumReached && poll?.isFinished;
 
-  const vote = async (votingPower: string) => {
+  const vote = async (votingPower: string = '0') => {
     const poll = createContract<VotrPoll>(ethereum, VotrPollContract.abi, address as string);
     try {
-      const tx = await poll.vote([selectedChoiceId!], [votingPower]);
+      const multiVotesArray = mapChoicesAndVotesToArray(votesForChoices);
+      const [choices, votePowers] = isMultivote ? multiVotesArray : [[selectedChoiceId!], [votingPower]];
+      const tx = await poll.vote(choices, votePowers);
       const receiptPromise = tx.wait();
       generateTransactionToast(receiptPromise, tx.hash, networkId!);
       await receiptPromise;
@@ -70,12 +78,20 @@ const PollVotePage: React.FC = () => {
     }
   };
 
-  const openVoteConfirmationModal = () => {
-    if (selectedChoiceId === undefined) {
+  const startVoteProcedure = () => {
+    if (selectedChoiceId === undefined && !isMultivote) {
       toast.error('Select an option first');
       return;
     }
-    voteConfirmationModalRef.current?.toggleModal();
+    if (!isMultivote) {
+      voteConfirmationModalRef.current?.toggleModal();
+      return;
+    }
+    if (isMultivote && [...votesForChoices.values()].every((vote) => !vote)) {
+      toast.error('Select at least one positive vote');
+      return;
+    }
+    vote();
   };
 
   const executeCallback = async () => {
@@ -111,29 +127,66 @@ const PollVotePage: React.FC = () => {
               </InputsWrapper>
             </Box>
             <Box padding="16px 32px" paddingMobile="16px 0">
-              <FramedSection title={'Choices'} minWidth="100%">
+              <FramedSection
+                title={
+                  <ChoicesTitleWrapper>
+                    Choices
+                    <MultivoteWrapper>
+                      multivote
+                      <ThemedCheckbox
+                        checked={isMultivote}
+                        onChange={() => {
+                          setIsMultivote(!isMultivote);
+                          setSelectedChoiceId(undefined);
+                        }}
+                        type="checkbox"
+                        margin="0 4px 0 4px"
+                      />
+                    </MultivoteWrapper>
+                  </ChoicesTitleWrapper>
+                }
+                minWidth="100%"
+              >
                 <LoadingFallback isLoading={pollDataStatus === 'loading'}>
-                  <SeparatedList>
-                    {poll?.choices.map((choice) => (
-                      <SelectableListElement
-                        key={choice.id}
-                        isSelected={choice.id === selectedChoiceId}
-                        onClick={() => setSelectedChoiceId(choice.id)}
-                      >
-                        {choice.value}
-                      </SelectableListElement>
-                    ))}
-                    {!poll?.isFinished && (
-                      <FramedSectionButton onClick={openVoteConfirmationModal}>VOTE</FramedSectionButton>
-                    )}
-                    <VoteConfirmationModal
-                      ref={voteConfirmationModalRef}
-                      vote={vote}
-                      symbol={poll?.underlyingToken?.symbol ?? ''}
-                      balance={poll?.underlyingToken?.balance ?? ''}
-                      selectedChoice={poll?.choices[selectedChoiceId!]?.value}
-                    />
-                  </SeparatedList>
+                  {isMultivote ? (
+                    <SeparatedList>
+                      {poll?.choices.map((choice) => (
+                        <SelectableListElement key={choice.id} isSelected={false} isMultivote>
+                          <Switch
+                            onChange={() => {
+                              votesForChoices.set(choice.id, !votesForChoices.get(choice.id));
+                              setVotesForChoices(new Map(votesForChoices));
+                            }}
+                            checked={votesForChoices.get(choice.id)!}
+                            height={16}
+                            width={32}
+                          />
+                          <ChoiceNameWrapper>{choice.value}</ChoiceNameWrapper>
+                        </SelectableListElement>
+                      ))}
+                    </SeparatedList>
+                  ) : (
+                    <SeparatedList>
+                      {poll?.choices.map((choice) => (
+                        <SelectableListElement
+                          key={choice.id}
+                          isSelected={choice.id === selectedChoiceId}
+                          onClick={() => setSelectedChoiceId(choice.id)}
+                        >
+                          {choice.value}
+                        </SelectableListElement>
+                      ))}
+                    </SeparatedList>
+                  )}
+                  {!poll?.isFinished && <FramedSectionButton onClick={startVoteProcedure}>VOTE</FramedSectionButton>}
+                  <VoteConfirmationModal
+                    ref={voteConfirmationModalRef}
+                    vote={vote}
+                    symbol={poll?.underlyingToken?.symbol ?? ''}
+                    balance={poll?.underlyingToken?.balance ?? ''}
+                    selectedChoice={poll?.choices[selectedChoiceId!]?.value}
+                    pollType={poll?.pollType!}
+                  />
                 </LoadingFallback>
               </FramedSection>
             </Box>
@@ -286,5 +339,11 @@ const PollVotePage: React.FC = () => {
     </>
   );
 };
+
+function mapChoicesAndVotesToArray(votesForChoices: Map<number, boolean>) {
+  const keys = [...votesForChoices.keys()];
+  const values = keys.map((key) => (votesForChoices.get(key) ? 1 : -1));
+  return [keys, values];
+}
 
 export default PollVotePage;

@@ -29,7 +29,7 @@ interface Choice {
 
 type ERC20TokenWithBalance = ERC20Token & { balance: string };
 
-type PollDetails = Omit<CreatePollStore, 'voters' | 'choices'> & {
+export type PollDetails = Omit<CreatePollStore, 'voters' | 'choices'> & {
   votes: Vote[];
   choices: Choice[];
   isCallbackCalled: boolean;

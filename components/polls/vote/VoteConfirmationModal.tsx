@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useState } from 'react';
+import { PollType } from '../../../constants/pollTypes';
 import useStyledModal from '../../../utils/hooks/useStyledModal';
 import { QuorumInput } from '../../styled/create/Create';
 import { StyledModal } from '../../styled/create/VotrModalStyled';
@@ -25,14 +26,19 @@ interface VoteConfirmationModal {
   vote: (votingPower: string) => Promise<void>;
   symbol: string;
   balance: string;
+  pollType: PollType;
   selectedChoice?: string;
 }
 
 // eslint-disable-next-line react/display-name
 const VoteConfirmationModal = forwardRef<ModalHandle, VoteConfirmationModal>(
-  ({ vote, symbol, balance, selectedChoice }, ref) => {
+  ({ vote, symbol, balance, selectedChoice, pollType }, ref) => {
     const { isOpen: isVotingPowerModalOpen, toggleModal, afterOpen, beforeClose, opacity } = useStyledModal();
     const [votingPower, setVotingPower] = useState('1');
+
+    const maxBalance = pollType?.name?.toLowerCase().includes('quadratic')
+      ? Math.floor(Math.sqrt(+balance)).toString()
+      : balance;
 
     useImperativeHandle(ref, () => ({ toggleModal }));
     return (
@@ -60,14 +66,14 @@ const VoteConfirmationModal = forwardRef<ModalHandle, VoteConfirmationModal>(
                 <SingleDescriptor>
                   <ElementDescription>Avalible amount of votes</ElementDescription>
                   <ElementValue>
-                    {balance} {symbol}
+                    {maxBalance} {symbol}
                   </ElementValue>
                 </SingleDescriptor>
                 <SingleDescriptor>
                   <ElementDescription>Voting power</ElementDescription>
                   <ElementValue>
                     <Flex>
-                      <UtilityButton margin="0" onClick={() => setVotingPower(balance)}>
+                      <UtilityButton margin="0" onClick={() => setVotingPower(maxBalance)}>
                         MAX
                       </UtilityButton>
                       <QuorumInput

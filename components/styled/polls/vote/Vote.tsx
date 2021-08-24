@@ -30,7 +30,7 @@ export const EndAdornmentWrapper = styled.div`
   text-align: right;
 `;
 
-export const SelectableListElement = styled.div<{ isSelected: boolean }>`
+export const SelectableListElement = styled.div<{ isSelected: boolean; isMultivote?: boolean }>`
   border: 2px solid ${(props) => (props.isSelected ? props.theme.cta : props.theme.border)};
   border-radius: 32px;
   background: ${(props) => props.theme.disabled};
@@ -40,9 +40,9 @@ export const SelectableListElement = styled.div<{ isSelected: boolean }>`
   justify-content: center;
   align-items: center;
   transition: 0.25s;
-  cursor: pointer;
+  cursor: ${(props) => (props.isMultivote ? '' : 'pointer')};
   &:hover {
-    border: 2px solid ${(props) => props.theme.cta};
+    border: ${(props) => (props.isMultivote ? '' : `2px solid ${props.theme.cta}`)};
   }
 `;
 
@@ -61,4 +61,21 @@ export const CallbackBlockerWrapper = styled.div`
 export const PropertiesWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+export const ChoicesTitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const MultivoteWrapper = styled.div`
+  margin-left: auto;
+  display: flex;
+  font-size: 12px;
+`;
+
+export const ChoiceNameWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
 `;
