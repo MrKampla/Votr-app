@@ -14,6 +14,7 @@ import VotrPollJson from '../../contracts/VotrPoll.json';
 import { generateTransactionToast } from '../../utils/generateTransactionToast';
 import toast from 'react-hot-toast';
 import DepositCard from './DepositCard';
+import { CONTRACTS_DEPLOYMENT_BLOCK_NUMBER } from '../../constants/networks';
 
 function Unlock({
   pollAddress,
@@ -30,7 +31,11 @@ function Unlock({
   const { ethereum } = useContext(WalletContext);
 
   const sumOfAllTokensToUnlock = useMemo(
-    () => deposits.reduce((sum, deposit) => (deposit.isCurrent ? sum + Number(deposit.amountDeposited) : sum), 0),
+    () =>
+      deposits.reduce(
+        (sum, deposit) => (deposit.isCurrent ? sum + Number(deposit.amountDeposited) : sum),
+        CONTRACTS_DEPLOYMENT_BLOCK_NUMBER
+      ),
     [deposits]
   );
 

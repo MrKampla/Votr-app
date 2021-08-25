@@ -1,4 +1,4 @@
-import { NETWORK_NAMES } from '../constants/networkNames';
+import { NETWORK_NAMES } from '../constants/networks';
 
 const generateLinkToBlockchainExplorer = (data: string, type: string, networkId: number) => {
   const protocol = 'https://';

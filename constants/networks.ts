@@ -7,3 +7,5 @@ export const NETWORK_NAMES = {
   56: 'bnb',
   137: 'polygon',
 };
+
+export const CONTRACTS_DEPLOYMENT_BLOCK_NUMBER = Number(process.env.NEXT_PUBLIC_CONTRACTS_DEPLOYMENT_BLOCK_NUMBER ?? 0);

@@ -8,6 +8,7 @@ import { VotrContractsContext } from '../../components/providers/ContractInitial
 import { TypedEvent } from '../../contracts/@types/commons';
 import { Result } from 'ethers/lib/utils';
 import { RequestStatus } from '../../constants/requestStatus';
+import { CONTRACTS_DEPLOYMENT_BLOCK_NUMBER } from '../../constants/networks';
 
 export interface Deposit {
   amountDeposited: string;
@@ -43,21 +44,23 @@ function useDeposits({ pollAddress }: { pollAddress: string }) {
         try {
           const pollContract = createContract<VotrPoll>(ethereum, VotrPollContractJson.abi, pollAddress);
           const getAllDepositEventsFromAddress = pollContract.filters.Deposited(account);
-          pollContract.queryFilter(getAllDepositEventsFromAddress, 0).then(async (events) => {
-            const depositObjects = events.map(mapEventToDepositObject);
-            const currentDeposits = depositObjects.map(async (deposit) => {
-              try {
-                const currentDepositValue = await pollContract.userDeposits(account);
+          pollContract
+            .queryFilter(getAllDepositEventsFromAddress, CONTRACTS_DEPLOYMENT_BLOCK_NUMBER)
+            .then(async (events) => {
+              const depositObjects = events.map(mapEventToDepositObject);
+              const currentDeposits = depositObjects.map(async (deposit) => {
+                try {
+                  const currentDepositValue = await pollContract.userDeposits(account);
 
-                return currentDepositValue.amountDeposited.toNumber() === 0
-                  ? { ...deposit, isCurrent: false }
-                  : deposit;
-              } catch {
-                return (null as unknown) as typeof deposit;
-              }
+                  return currentDepositValue.amountDeposited.toNumber() === 0
+                    ? { ...deposit, isCurrent: false }
+                    : deposit;
+                } catch {
+                  return (null as unknown) as typeof deposit;
+                }
+              });
+              setDeposits((await Promise.all(currentDeposits)).filter((x) => !!x));
             });
-            setDeposits((await Promise.all(currentDeposits)).filter((x) => !!x));
-          });
         } catch (err) {
           setDeposits([]);
         }

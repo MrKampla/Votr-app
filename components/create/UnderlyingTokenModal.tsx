@@ -26,7 +26,7 @@ import createContract from '../../utils/createContract';
 import { ERC20 } from '../../contracts/@types';
 import { WalletContext } from '../providers/WalletConnector';
 import { RequestStatus } from '../../constants/requestStatus';
-import { NETWORK_NAMES } from '../../constants/networkNames';
+import { NETWORK_NAMES } from '../../constants/networks';
 import { ThemeContext } from 'styled-components';
 import useTokenList, { Token } from '../../utils/hooks/useTokenList';
 import { DisabledButton } from '../styled/homepage';

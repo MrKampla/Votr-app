@@ -5,6 +5,7 @@ import { Poll } from '../../components/polls/PollList';
 import { WalletContext } from '../../components/providers/WalletConnector';
 import { mapAddressToPollData } from '../mapAddressToPollData';
 import { RequestStatus } from '../../constants/requestStatus';
+import { CONTRACTS_DEPLOYMENT_BLOCK_NUMBER } from '../../constants/networks';
 
 export const useCreatedPollsByAccount = (): [Poll[], RequestStatus] => {
   const { pollFactory, networkId } = useContext(VotrContractsContext);
@@ -19,7 +20,7 @@ export const useCreatedPollsByAccount = (): [Poll[], RequestStatus] => {
     setStatus('loading');
     const getCreatedPollsByAccountQuery = pollFactory.filters.PollCreated(account);
     pollFactory
-      .queryFilter(getCreatedPollsByAccountQuery, 0)
+      .queryFilter(getCreatedPollsByAccountQuery, CONTRACTS_DEPLOYMENT_BLOCK_NUMBER)
       .then(async (events) => {
         const pollsData = await Promise.all(
           events.map(async ({ args: { owner, pollAddress }, blockNumber }) => {
