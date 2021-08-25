@@ -1,14 +1,17 @@
 {
-  "name": "votr-protocol-frontend",
+  "name": "@votr/frontend",
   "version": "1.0.0",
+  "description": "Votr protocol interface",
   "scripts": {
     "dev": "next",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typechain": "rm -rf contracts/types && typechain --target=ethers-v5 --out-dir contracts/@types './contracts/*.json'"
+    "typechain": "rm -rf contracts/* && cp -r node_modules/@votr/contracts/build/contracts/* ./contracts && typechain --target=ethers-v5 --out-dir contracts/@types './contracts/*.json'",
+    "postinstall": "yarn typechain"
   },
   "dependencies": {
+    "@votr/contracts": "^1.0.1",
     "axios": "^0.21.1",
     "date-fns": "^2.19.0",
     "ethers": "^5.4.1",
