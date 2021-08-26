@@ -71,7 +71,7 @@ export const usePollData = (pollAddress: string): [PollDetails | undefined, Requ
         },
       });
     } catch (err) {
-      toast.error(err.data.message);
+      toast.error('Something went wrong while fetching the poll data.');
       setStatus('error');
       return;
     }

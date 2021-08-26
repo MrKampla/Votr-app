@@ -49,7 +49,7 @@ function Unlock({
       await txReceipt;
       refresh();
     } catch (err) {
-      toast.error(err.data?.message ?? err.message);
+      toast.error(err.data?.message ?? err.error?.message ?? err.message);
       return;
     }
   };
