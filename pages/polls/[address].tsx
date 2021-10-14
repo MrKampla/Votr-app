@@ -34,6 +34,7 @@ import {
   ChoicesTitleWrapper,
   MultivoteWrapper,
   ChoiceNameWrapper,
+  SuccessMessage,
 } from '../../components/styled/polls/vote/Vote';
 import { VotrPoll } from '../../contracts/@types';
 import createContract from '../../utils/createContract';
@@ -49,6 +50,7 @@ import { LoadingFallback } from '../../components/homepage/LoadingIndicator';
 import { generateAddressLink } from '../../utils/generateLinkToEtherscan';
 import { VotrContractsContext } from '../../components/providers/ContractInitializer';
 import LinkToForge from '../../components/polls/vote/LinkToForge';
+import { ErrorMessage } from '../../components/styled/polls/vote/Vote';
 
 const PollVotePage: React.FC = () => {
   const router = useRouter();
@@ -313,13 +315,14 @@ const PollVotePage: React.FC = () => {
               <Box padding="32px 32px 0 0" paddingMobile="16px 0">
                 <FramedSection title={'Callback'} minWidth="100%">
                   <CallbackBlockerWrapper>
-                    {poll?.isCallbackCalled && (
-                      <>
-                        Callback has already been executed <AddressLink address={poll.callbackAddress} />
-                      </>
+                    <AddressLink address={poll.callbackAddress} />
+                    {poll?.isCallbackCalled && <SuccessMessage>Callback has already been executed</SuccessMessage>}
+                    {poll?.quorumReached !== undefined && !poll.quorumReached && (
+                      <ErrorMessage>Quorum not reached</ErrorMessage>
                     )}
-                    {poll?.quorumReached !== undefined && !poll.quorumReached && <>Quorum not reached</>}
-                    {poll?.isFinished !== undefined && !poll.isFinished && <>Poll has not yet ended</>}
+                    {poll?.isFinished !== undefined && !poll.isFinished && (
+                      <ErrorMessage>Poll has not yet ended</ErrorMessage>
+                    )}
                   </CallbackBlockerWrapper>
                   <ExecuteCallbackWrapper>
                     {canCallbackBeCalled ? (

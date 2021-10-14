@@ -79,3 +79,11 @@ export const ChoiceNameWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
+
+export const ErrorMessage = styled.div`
+  color: ${(props) => props.theme.danger};
+`;
+
+export const SuccessMessage = styled.div`
+  color: ${(props) => props.theme.success};
+`;

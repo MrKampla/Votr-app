@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typechain": "rm -rf contracts/* && mkdir ./contracts && cp -r node_modules/@votr/contracts/build/contracts/* ./contracts && typechain --target=ethers-v5 --out-dir contracts/@types './contracts/*.json'",
+    "typechain": "rm -rf contracts && mkdir ./contracts && cp -r node_modules/@votr/contracts/build/contracts/* ./contracts && typechain --target=ethers-v5 --out-dir contracts/@types './contracts/*.json'",
     "postinstall": "yarn typechain"
   },
   "dependencies": {
@@ -28,6 +28,7 @@
     "react-loading-skeleton": "^2.2.0",
     "react-switch": "^6.0.0",
     "react-textarea-autosize": "^8.3.1",
+    "sharp": "^0.29.1",
     "styled-components": "^5.0.0",
     "styled-react-modal": "^2.1.0",
     "use-dark-mode": "^2.3.1"
